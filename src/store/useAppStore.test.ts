@@ -108,19 +108,101 @@ describe('useAppStore — sessão de treino', () => {
     expect(await repo.listSessions()).toHaveLength(1)
   })
 
-  it('finishWorkout atualiza a sessão e vai para o registro', async () => {
+  it('finishWorkout abre o registro com status sugerido, mantendo a sessão ativa', async () => {
     const repo = new FakeRepository()
     const store = createAppStore(repo)
     await store.getState().startWorkout()
     const id = store.getState().activeSessionId
 
-    await store.getState().finishWorkout('completed')
+    store.getState().finishWorkout('partial')
+
+    const s = store.getState()
+    expect(s.view).toBe('log')
+    expect(s.suggestedStatus).toBe('partial')
+    // sessão continua ativa até salvar o registro
+    expect(s.activeSessionId).toBe(id)
+    // ainda não finalizou no banco
+    const stored = (await repo.listSessions()).find((x) => x.id === id)
+    expect(stored?.status).toBe('not_completed')
+  })
+})
+
+describe('useAppStore — registro pós-treino', () => {
+  const globals = {
+    lowBackPainBefore: 4,
+    lowBackPainAfter: 2,
+    rpe: 6,
+    frontPlankSec: 40,
+    reachToFloorCm: 8,
+    botheredExerciseId: null,
+    botheredSide: 'not_applicable' as const,
+    notes: null,
+  }
+
+  async function withActiveSession() {
+    const repo = new FakeRepository()
+    const store = createAppStore(repo)
+    await store.getState().startWorkout()
+    return { repo, store }
+  }
+
+  it('salva log e sideMetrics, atualiza a sessão e volta ao dashboard', async () => {
+    const { repo, store } = await withActiveSession()
+    const id = store.getState().activeSessionId
+
+    await store.getState().saveSessionLog({
+      status: 'completed',
+      globals,
+      sideInputs: [
+        { metric: 'adductor_pain', side: 'left', phase: 'after', value: 3 },
+        { metric: 'side_plank_sec', side: 'right', phase: 'single', value: 22 },
+      ],
+    })
 
     const s = store.getState()
     expect(s.activeSessionId).toBeNull()
-    expect(s.view).toBe('log')
-    const stored = (await repo.listSessions()).find((x) => x.id === id)
-    expect(stored?.status).toBe('completed')
-    expect(stored?.completedAt).not.toBeNull()
+    expect(s.view).toBe('today')
+
+    const logs = await repo.listLogs()
+    expect(logs).toHaveLength(1)
+    expect(logs[0].lowBackPainAfter).toBe(2)
+    expect(await repo.listSideMetrics()).toHaveLength(2)
+
+    const session = (await repo.listSessions()).find((x) => x.id === id)
+    expect(session?.status).toBe('completed')
+    expect(session?.completedAt).not.toBeNull()
+  })
+
+  it("materializa 'both' em left+right e ignora 'not_applicable'", async () => {
+    const { repo, store } = await withActiveSession()
+    await store.getState().saveSessionLog({
+      status: 'completed',
+      globals,
+      sideInputs: [
+        { metric: 'adductor_pain', side: 'both', phase: 'after', value: 4 },
+        { metric: 'side_plank_sec', side: 'not_applicable', phase: 'single', value: 30 },
+      ],
+    })
+    const metrics = await repo.listSideMetrics()
+    expect(metrics).toHaveLength(2) // both → 2; not_applicable → 0
+    expect(metrics.map((m) => m.side).sort()).toEqual(['left', 'right'])
+    expect(metrics.every((m) => m.side === 'left' || m.side === 'right')).toBe(true)
+  })
+
+  it('não salva duplicado em salvamento concorrente', async () => {
+    const { repo, store } = await withActiveSession()
+    await Promise.all([
+      store.getState().saveSessionLog({ status: 'completed', globals, sideInputs: [] }),
+      store.getState().saveSessionLog({ status: 'completed', globals, sideInputs: [] }),
+    ])
+    expect(await repo.listLogs()).toHaveLength(1)
+  })
+
+  it('sem sessão ativa, apenas volta ao dashboard', async () => {
+    const repo = new FakeRepository()
+    const store = createAppStore(repo)
+    await store.getState().saveSessionLog({ status: 'completed', globals, sideInputs: [] })
+    expect(store.getState().view).toBe('today')
+    expect(await repo.listLogs()).toHaveLength(0)
   })
 })

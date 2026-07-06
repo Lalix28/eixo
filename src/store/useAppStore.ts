@@ -10,7 +10,23 @@ import { resolveTodayDay } from '../domain/plan'
 import { toDayKey } from '../domain/progress'
 import { PLAN_DAYS } from '../data/plan'
 import { repository } from '../persistence/dexieRepository'
-import type { Repository } from '../persistence/repository'
+import type {
+  NewLog,
+  Repository,
+  SideMetricInput,
+} from '../persistence/repository'
+
+/** Campos globais do registro (tudo exceto sessionId/dayKey, carimbados no store). */
+export type LogGlobals = Omit<NewLog, 'sessionId' | 'dayKey'>
+
+/** Submissão do registro pós-treino: status final + globais + métricas por lado. */
+export interface LogSubmission {
+  status: SessionStatus
+  globals: LogGlobals
+  sideInputs: SideMetricInput[]
+}
+
+type SuggestedStatus = Extract<SessionStatus, 'completed' | 'partial'>
 
 /**
  * Navegação por estado (sem router), conforme decisão de arquitetura.
@@ -42,10 +58,14 @@ interface AppState {
   sessions: Session[]
   initialized: boolean
 
-  /** Sessão de treino em andamento (criada ao iniciar, limpa ao concluir). */
+  /** Sessão de treino em andamento (criada ao iniciar, limpa ao salvar o registro). */
   activeSessionId: string | null
   /** Guarda contra criação de sessões duplicadas em cliques repetidos. */
   starting: boolean
+  /** Status sugerido ao abrir o registro (do fim do treino). */
+  suggestedStatus: SuggestedStatus
+  /** Salvamento do registro em andamento (evita duplo salvamento). */
+  saving: boolean
 
   setView: (view: View) => void
   /** Carrega baseline e sessões do repositório (uma vez). */
@@ -54,8 +74,10 @@ interface AppState {
   submitOnboarding: (answers: OnboardingAnswers) => Promise<void>
   /** Cria a Session do dia (status 'not_completed') e abre a execução. */
   startWorkout: () => Promise<void>
-  /** Marca a sessão ativa como concluída/parcial e vai para o registro. */
-  finishWorkout: (status: Extract<SessionStatus, 'completed' | 'partial'>) => Promise<void>
+  /** Encerra a execução e abre o registro com status sugerido (mantém a sessão ativa). */
+  finishWorkout: (status: SuggestedStatus) => void
+  /** Persiste log + métricas por lado, atualiza a sessão e volta ao dashboard. */
+  saveSessionLog: (submission: LogSubmission) => Promise<void>
 }
 
 /**
@@ -72,6 +94,8 @@ export function createAppStore(repo: Repository) {
     initialized: false,
     activeSessionId: null,
     starting: false,
+    suggestedStatus: 'completed',
+    saving: false,
 
     setView: (view) => set({ view }),
 
@@ -138,24 +162,49 @@ export function createAppStore(repo: Repository) {
       }
     },
 
-    finishWorkout: async (status) => {
-      const id = get().activeSessionId
-      if (!id) {
-        set({ view: 'log' })
+    finishWorkout: (status) => {
+      // Não finaliza no banco ainda: mantém a sessão ativa e abre o registro
+      // com o status sugerido. A finalização ocorre ao salvar o registro.
+      set({ suggestedStatus: status, view: 'log' })
+    },
+
+    saveSessionLog: async (submission) => {
+      const { saving, activeSessionId, sessions } = get()
+      if (saving) return
+      if (!activeSessionId) {
+        set({ view: 'today' })
         return
       }
-      const completedAt = Date.now()
+      set({ saving: true })
       try {
-        await repo.updateSession(id, { status, completedAt })
+        const session = sessions.find((s) => s.id === activeSessionId)
+        const dayKey = session?.dayKey ?? toDayKey(new Date())
+
+        const log = await repo.saveLog({
+          sessionId: activeSessionId,
+          dayKey,
+          ...submission.globals,
+        })
+        await repo.saveSideMetrics(log.id, dayKey, submission.sideInputs)
+
+        const completedAt = session?.completedAt ?? Date.now()
+        await repo.updateSession(activeSessionId, {
+          status: submission.status,
+          completedAt,
+        })
+
         set((state) => ({
           sessions: state.sessions.map((s) =>
-            s.id === id ? { ...s, status, completedAt } : s,
+            s.id === activeSessionId
+              ? { ...s, status: submission.status, completedAt }
+              : s,
           ),
           activeSessionId: null,
-          view: 'log',
+          saving: false,
+          view: 'today',
         }))
       } catch {
-        set({ status: 'error', error: IDB_ERROR_MESSAGE })
+        set({ saving: false, status: 'error', error: IDB_ERROR_MESSAGE })
       }
     },
   }))

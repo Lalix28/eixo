@@ -48,6 +48,27 @@ describe('Today (dashboard)', () => {
     expect(screen.getByText('Treino ainda não iniciado')).toBeInTheDocument()
   })
 
+  it('reconhece o treino registrado do dia', () => {
+    const todayKey = new Date()
+    const key = `${todayKey.getFullYear()}-${String(todayKey.getMonth() + 1).padStart(2, '0')}-${String(todayKey.getDate()).padStart(2, '0')}`
+    useAppStore.setState({
+      sessions: [
+        {
+          id: 's1',
+          planDayId: 'day-01',
+          dayIndex: 1,
+          dayKey: key,
+          startedAt: 0,
+          completedAt: 1,
+          status: 'completed',
+          createdAt: '2026-07-06T00:00:00.000Z',
+        },
+      ],
+    })
+    render(<Today />)
+    expect(screen.getByText('Treino registrado')).toBeInTheDocument()
+  })
+
   it('resume o baseline real', () => {
     render(<Today />)
     expect(screen.getByText('Seu ponto de partida')).toBeInTheDocument()

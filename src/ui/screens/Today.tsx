@@ -5,9 +5,25 @@ import { SafetyCallout } from '../components/SafetyCallout'
 import { useAppStore } from '../../store/useAppStore'
 import { PLAN_DAYS } from '../../data/plan'
 import { EXERCISES_BY_ID } from '../../data/exercises'
-import { getWeekProgression, resolveTodayDay } from '../../domain/plan'
+import {
+  getPlanDay,
+  getWeekProgression,
+  resolveTodayDay,
+} from '../../domain/plan'
 import { toDayKey } from '../../domain/progress'
 import { SIDE_LABEL, WEEKDAY_LABEL, formatPrescription } from './todayFormat'
+
+type TodayStatus = 'completed' | 'partial' | 'not_completed' | 'none'
+
+const STATUS_CHIP: Record<TodayStatus, { text: string; cls: string }> = {
+  completed: { text: 'Treino registrado', cls: 'bg-brand-50 text-brand-700' },
+  partial: { text: 'Treino parcial', cls: 'bg-warn-500/15 text-warn-500' },
+  not_completed: {
+    text: 'Treino não concluído',
+    cls: 'bg-ink-100 text-ink-600',
+  },
+  none: { text: 'Treino ainda não iniciado', cls: 'bg-ink-100 text-ink-600' },
+}
 
 export function Today() {
   const baseline = useAppStore((s) => s.baseline)
@@ -19,11 +35,30 @@ export function Today() {
   if (!baseline) return null
 
   const todayKey = toDayKey(new Date())
-  const { day, dayIndex, loggedToday, programComplete } = resolveTodayDay(
-    PLAN_DAYS,
-    sessions,
-    todayKey,
+  const resolved = resolveTodayDay(PLAN_DAYS, sessions, todayKey)
+  const programComplete = resolved.programComplete
+
+  // Reconhece o treino do dia (calendário) para status honesto.
+  const doneToday = sessions
+    .filter(
+      (s) =>
+        s.dayKey === todayKey &&
+        (s.status === 'completed' || s.status === 'partial'),
+    )
+    .sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1))[0]
+  const inProgressToday = sessions.find(
+    (s) => s.dayKey === todayKey && s.status === 'not_completed',
   )
+
+  const day =
+    (doneToday && getPlanDay(PLAN_DAYS, doneToday.dayIndex)) ?? resolved.day
+  const dayIndex = day.dayIndex
+  const statusKind: TodayStatus = doneToday
+    ? doneToday.status
+    : inProgressToday
+      ? 'not_completed'
+      : 'none'
+  const chip = STATUS_CHIP[statusKind]
   const progression = getWeekProgression(dayIndex)
 
   return (
@@ -41,13 +76,9 @@ export function Today() {
           </div>
           <div className="mt-3">
             <span
-              className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-medium ${
-                loggedToday
-                  ? 'bg-brand-50 text-brand-700'
-                  : 'bg-ink-100 text-ink-600'
-              }`}
+              className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-medium ${chip.cls}`}
             >
-              {loggedToday ? 'Treino de hoje registrado' : 'Treino ainda não iniciado'}
+              {chip.text}
             </span>
             {programComplete && (
               <span className="ml-2 inline-flex items-center rounded-full bg-brand-50 px-3 py-1 text-xs font-medium text-brand-700">
