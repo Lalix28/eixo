@@ -7,7 +7,7 @@ export function Settings() {
       <EmptyState
         icon="⚙️"
         title="Ajustes em construção"
-        description="Baseline, avisos de segurança e info do app chegam na Fase 4."
+        description="Resumo do baseline, avisos de segurança completos e info do app chegam numa fase posterior."
       />
     </ScreenShell>
   )

@@ -1,22 +1,121 @@
 import { ScreenShell } from '../components/ScreenShell'
-import { EmptyState } from '../components/EmptyState'
+import { Card } from '../components/Card'
 import { Button } from '../components/Button'
+import { SafetyCallout } from '../components/SafetyCallout'
 import { useAppStore } from '../../store/useAppStore'
+import { PLAN_DAYS } from '../../data/plan'
+import { EXERCISES_BY_ID } from '../../data/exercises'
+import { getWeekProgression, resolveTodayDay } from '../../domain/plan'
+import { toDayKey } from '../../domain/progress'
+import { SIDE_LABEL, WEEKDAY_LABEL, formatPrescription } from './todayFormat'
 
 export function Today() {
+  const baseline = useAppStore((s) => s.baseline)
+  const sessions = useAppStore((s) => s.sessions)
   const setView = useAppStore((s) => s.setView)
+
+  // O gate do App garante baseline presente aqui; guarda defensiva.
+  if (!baseline) return null
+
+  const todayKey = toDayKey(new Date())
+  const { day, dayIndex, loggedToday, programComplete } = resolveTodayDay(
+    PLAN_DAYS,
+    sessions,
+    todayKey,
+  )
+  const progression = getWeekProgression(dayIndex)
+
   return (
-    <ScreenShell title="Hoje" subtitle="Seu treino do dia">
-      <EmptyState
-        icon="🌱"
-        title="Dashboard em construção"
-        description="A tela Hoje ganha o card do treino e a semana na Fase 4."
-        action={
-          <Button variant="secondary" onClick={() => setView('progress')}>
-            Ver progresso
-          </Button>
-        }
-      />
+    <ScreenShell title="Eixo" subtitle={`Dia ${dayIndex} de ${PLAN_DAYS.length}`}>
+      <div className="space-y-5">
+        {/* Foco do dia + status honesto */}
+        <Card>
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-wide text-brand-600">
+                {WEEKDAY_LABEL[day.weekday]} · Semana {day.week}
+              </p>
+              <h2 className="mt-1 text-xl font-bold text-ink-900">{day.focus}</h2>
+            </div>
+          </div>
+          <div className="mt-3">
+            <span
+              className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-medium ${
+                loggedToday
+                  ? 'bg-brand-50 text-brand-700'
+                  : 'bg-ink-100 text-ink-600'
+              }`}
+            >
+              {loggedToday ? 'Treino de hoje registrado' : 'Treino ainda não iniciado'}
+            </span>
+            {programComplete && (
+              <span className="ml-2 inline-flex items-center rounded-full bg-brand-50 px-3 py-1 text-xs font-medium text-brand-700">
+                Programa de 30 dias concluído
+              </span>
+            )}
+          </div>
+        </Card>
+
+        {/* Resumo do baseline */}
+        <Card>
+          <h3 className="mb-3 text-sm font-semibold text-ink-800">Seu ponto de partida</h3>
+          <dl className="grid grid-cols-3 gap-3 text-center">
+            <div>
+              <dt className="text-xs text-ink-500">Dor lombar</dt>
+              <dd className="mt-1 text-lg font-bold text-ink-900">{baseline.lowBackPain}</dd>
+            </div>
+            <div>
+              <dt className="text-xs text-ink-500">Dor adutores</dt>
+              <dd className="mt-1 text-lg font-bold text-ink-900">{baseline.adductorPain}</dd>
+            </div>
+            <div>
+              <dt className="text-xs text-ink-500">Maior limitação</dt>
+              <dd className="mt-1 text-sm font-semibold text-ink-900">
+                {SIDE_LABEL[baseline.atrophySide]}
+              </dd>
+            </div>
+          </dl>
+        </Card>
+
+        <SafetyCallout />
+
+        {/* Blocos previstos para hoje */}
+        <section className="space-y-4">
+          <h3 className="text-sm font-semibold text-ink-800">Previsto para hoje</h3>
+          {day.blocks.map((block) => (
+            <Card key={block.title}>
+              <h4 className="mb-3 font-semibold text-ink-900">{block.title}</h4>
+              <ul className="space-y-3">
+                {block.items.map((item, i) => {
+                  const exercise = EXERCISES_BY_ID[item.exerciseId]
+                  if (!exercise) return null
+                  const dose = formatPrescription(item, progression)
+                  return (
+                    <li key={`${item.exerciseId}-${i}`} className="flex items-start justify-between gap-3">
+                      <div>
+                        <p className="font-medium text-ink-900">{exercise.name}</p>
+                        <p className="text-sm text-ink-500">{exercise.cue}</p>
+                        {item.note && (
+                          <p className="text-xs text-ink-400">{item.note}</p>
+                        )}
+                      </div>
+                      {dose && (
+                        <span className="shrink-0 rounded-full bg-ink-100 px-3 py-1 text-xs font-medium text-ink-700">
+                          {dose}
+                        </span>
+                      )}
+                    </li>
+                  )
+                })}
+              </ul>
+            </Card>
+          ))}
+        </section>
+
+        <Button className="w-full" onClick={() => setView('workout')}>
+          Começar treino
+        </Button>
+      </div>
     </ScreenShell>
   )
 }
