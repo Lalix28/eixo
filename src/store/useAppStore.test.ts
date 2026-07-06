@@ -206,3 +206,26 @@ describe('useAppStore — registro pós-treino', () => {
     expect(await repo.listLogs()).toHaveLength(0)
   })
 })
+
+describe('useAppStore — progresso', () => {
+  it('loadProgress carrega sessions, logs e sideMetrics do repositório', async () => {
+    const repo = new FakeRepository()
+    const store = createAppStore(repo)
+    await store.getState().startWorkout()
+    await store.getState().saveSessionLog({
+      status: 'completed',
+      globals: { lowBackPainAfter: 3 },
+      sideInputs: [
+        { metric: 'side_plank_sec', side: 'left', phase: 'single', value: 20 },
+      ],
+    })
+
+    await store.getState().loadProgress()
+
+    const pd = store.getState().progressData
+    expect(pd).not.toBeNull()
+    expect(pd?.sessions).toHaveLength(1)
+    expect(pd?.logs).toHaveLength(1)
+    expect(pd?.sideMetrics).toHaveLength(1)
+  })
+})

@@ -11,6 +11,7 @@ import { toDayKey } from '../domain/progress'
 import { PLAN_DAYS } from '../data/plan'
 import { repository } from '../persistence/dexieRepository'
 import type {
+  DataBundle,
   NewLog,
   Repository,
   SideMetricInput,
@@ -67,6 +68,11 @@ interface AppState {
   /** Salvamento do registro em andamento (evita duplo salvamento). */
   saving: boolean
 
+  /** Snapshot de dados para o Progresso (sessions + logs + sideMetrics). */
+  progressData: DataBundle | null
+  progressLoading: boolean
+  progressError: string | null
+
   setView: (view: View) => void
   /** Carrega baseline e sessões do repositório (uma vez). */
   init: () => Promise<void>
@@ -78,6 +84,8 @@ interface AppState {
   finishWorkout: (status: SuggestedStatus) => void
   /** Persiste log + métricas por lado, atualiza a sessão e volta ao dashboard. */
   saveSessionLog: (submission: LogSubmission) => Promise<void>
+  /** Carrega o snapshot de progresso do repositório. */
+  loadProgress: () => Promise<void>
 }
 
 /**
@@ -96,6 +104,9 @@ export function createAppStore(repo: Repository) {
     starting: false,
     suggestedStatus: 'completed',
     saving: false,
+    progressData: null,
+    progressLoading: false,
+    progressError: null,
 
     setView: (view) => set({ view }),
 
@@ -205,6 +216,16 @@ export function createAppStore(repo: Repository) {
         }))
       } catch {
         set({ saving: false, status: 'error', error: IDB_ERROR_MESSAGE })
+      }
+    },
+
+    loadProgress: async () => {
+      set({ progressLoading: true, progressError: null })
+      try {
+        const data = await repo.getProgressData()
+        set({ progressData: data, progressLoading: false })
+      } catch {
+        set({ progressLoading: false, progressError: IDB_ERROR_MESSAGE })
       }
     },
   }))
