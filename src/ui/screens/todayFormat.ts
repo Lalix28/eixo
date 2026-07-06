@@ -1,5 +1,8 @@
 import type { PlanItem, Side, Weekday, WeekProgression } from '../../domain/types'
 
+/** Subconjunto de prescrição comum a PlanItem e ResolvedExercise. */
+type Prescribable = Pick<PlanItem, 'sets' | 'reps' | 'timeSec' | 'useProgression'>
+
 export const WEEKDAY_LABEL: Record<Weekday, string> = {
   mon: 'Segunda',
   tue: 'Terça',
@@ -23,7 +26,7 @@ function formatSeconds(sec: number): string {
 
 /** Descrição de dose de um item do plano (apresentação, não domínio). */
 export function formatPrescription(
-  item: PlanItem,
+  item: Prescribable,
   progression: WeekProgression,
 ): string {
   if (item.useProgression === 'sprints') {

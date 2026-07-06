@@ -12,7 +12,8 @@ import { SIDE_LABEL, WEEKDAY_LABEL, formatPrescription } from './todayFormat'
 export function Today() {
   const baseline = useAppStore((s) => s.baseline)
   const sessions = useAppStore((s) => s.sessions)
-  const setView = useAppStore((s) => s.setView)
+  const startWorkout = useAppStore((s) => s.startWorkout)
+  const starting = useAppStore((s) => s.starting)
 
   // O gate do App garante baseline presente aqui; guarda defensiva.
   if (!baseline) return null
@@ -112,8 +113,12 @@ export function Today() {
           ))}
         </section>
 
-        <Button className="w-full" onClick={() => setView('workout')}>
-          Começar treino
+        <Button
+          className="w-full"
+          onClick={() => void startWorkout()}
+          disabled={starting}
+        >
+          {starting ? 'Iniciando…' : 'Começar treino'}
         </Button>
       </div>
     </ScreenShell>

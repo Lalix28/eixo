@@ -251,3 +251,38 @@ export interface Delta {
   last: number
   delta: number
 }
+
+// ---------------------------------------------------------------------------
+// Timer (execução de treino)
+// ---------------------------------------------------------------------------
+
+export type TimerPhaseKind = 'work' | 'rest'
+
+/** Uma fase do timer: esforço ou descanso, com duração fixa. */
+export interface TimerPhase {
+  kind: TimerPhaseKind
+  durationMs: number
+  label: string
+  exerciseId?: string
+}
+
+/** Especificação de um bloco intervalado (tiros, quadril/core). */
+export interface IntervalSpec {
+  rounds: number
+  workMs: number
+  restMs: number
+  label: string
+  exerciseId?: string
+}
+
+/** Estado derivado do timer a partir de timestamps (nunca acumulado). */
+export interface TimerSnapshot {
+  phaseIndex: number
+  phaseKind: TimerPhaseKind | 'done'
+  remainingMs: number
+  phaseDurationMs: number
+  /** Progresso 0..1 dentro da fase atual. */
+  progress: number
+  totalRemainingMs: number
+  done: boolean
+}

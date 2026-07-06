@@ -81,3 +81,46 @@ describe('useAppStore — navegação', () => {
     expect(store.getState().view).toBe('progress')
   })
 })
+
+describe('useAppStore — sessão de treino', () => {
+  it('startWorkout cria uma Session e abre a execução', async () => {
+    const repo = new FakeRepository()
+    const store = createAppStore(repo)
+    await store.getState().startWorkout()
+
+    const s = store.getState()
+    expect(s.activeSessionId).toBeTruthy()
+    expect(s.view).toBe('workout')
+    expect(s.sessions).toHaveLength(1)
+    // criada como 'not_completed' (não avança o programa)
+    expect(s.sessions[0].status).toBe('not_completed')
+    expect(await repo.listSessions()).toHaveLength(1)
+  })
+
+  it('não duplica sessão em cliques repetidos', async () => {
+    const repo = new FakeRepository()
+    const store = createAppStore(repo)
+    await Promise.all([
+      store.getState().startWorkout(),
+      store.getState().startWorkout(),
+    ])
+    await store.getState().startWorkout()
+    expect(await repo.listSessions()).toHaveLength(1)
+  })
+
+  it('finishWorkout atualiza a sessão e vai para o registro', async () => {
+    const repo = new FakeRepository()
+    const store = createAppStore(repo)
+    await store.getState().startWorkout()
+    const id = store.getState().activeSessionId
+
+    await store.getState().finishWorkout('completed')
+
+    const s = store.getState()
+    expect(s.activeSessionId).toBeNull()
+    expect(s.view).toBe('log')
+    const stored = (await repo.listSessions()).find((x) => x.id === id)
+    expect(stored?.status).toBe('completed')
+    expect(stored?.completedAt).not.toBeNull()
+  })
+})
