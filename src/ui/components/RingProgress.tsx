@@ -29,8 +29,14 @@ export function RingProgress({
   const offset = circumference * (1 - clamped)
 
   return (
-    <div className="relative" style={{ width: size, height: size }}>
-      <svg width={size} height={size} className={TONE_CLASS[tone]}>
+    <div
+      className="relative aspect-square max-w-full"
+      style={{ width: `min(${size}px, 76vw)` }}
+    >
+      <svg
+        viewBox={`0 0 ${size} ${size}`}
+        className={`h-full w-full ${TONE_CLASS[tone]}`}
+      >
         <circle
           cx={size / 2}
           cy={size / 2}

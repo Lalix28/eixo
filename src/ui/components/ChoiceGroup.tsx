@@ -32,7 +32,7 @@ export function ChoiceGroup<T extends string>({
               type="button"
               aria-pressed={active}
               onClick={() => onChange(opt.value)}
-              className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${
+              className={`min-h-11 rounded-full px-4 py-2 text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600 ${
                 active
                   ? 'bg-brand-600 text-white'
                   : 'bg-ink-100 text-ink-700 hover:bg-ink-200'

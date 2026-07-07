@@ -1,4 +1,10 @@
-import { useEffect } from 'react'
+import {
+  lazy,
+  Suspense,
+  useEffect,
+  type ComponentType,
+  type ReactElement,
+} from 'react'
 import { useAppStore, type View } from './store/useAppStore'
 import { AppNav } from './ui/components/AppNav'
 import { Button } from './ui/components/Button'
@@ -6,10 +12,15 @@ import { Onboarding } from './ui/screens/Onboarding'
 import { Today } from './ui/screens/Today'
 import { Workout } from './ui/screens/Workout'
 import { LogSession } from './ui/screens/LogSession'
-import { Progress } from './ui/screens/Progress'
 import { Settings } from './ui/screens/Settings'
 
-const SCREENS: Record<View, () => React.ReactElement | null> = {
+const Progress = lazy(() =>
+  import('./ui/screens/Progress').then(({ Progress: Screen }) => ({
+    default: Screen,
+  })),
+)
+
+const SCREENS: Record<View, ComponentType> = {
   onboarding: Onboarding,
   today: Today,
   workout: Workout,
@@ -23,8 +34,38 @@ const FULLSCREEN_VIEWS: View[] = ['onboarding', 'workout', 'log']
 
 function LoadingScreen() {
   return (
-    <div className="flex min-h-dvh items-center justify-center text-ink-400">
-      <p>Carregando…</p>
+    <div
+      className="mx-auto flex min-h-dvh max-w-md flex-col justify-center gap-4 px-5"
+      role="status"
+      aria-label="Carregando o Eixo"
+    >
+      <div className="h-3 w-16 animate-pulse rounded-full bg-brand-100" />
+      <div className="h-8 w-36 animate-pulse rounded-xl bg-ink-200" />
+      <div className="h-28 animate-pulse rounded-[var(--radius-card)] bg-white ring-1 ring-ink-100" />
+      <p className="text-sm text-ink-500">Carregando seus dados…</p>
+    </div>
+  )
+}
+
+function ProgressLoadingScreen() {
+  return (
+    <div
+      className="mx-auto w-full max-w-md px-5 pt-8 pb-28"
+      role="status"
+      aria-label="Carregando progresso"
+    >
+      <div className="h-8 w-36 animate-pulse rounded-xl bg-ink-200" />
+      <div className="mt-2 h-5 w-56 animate-pulse rounded-lg bg-ink-100" />
+      <div className="mt-7 grid grid-cols-2 gap-3">
+        {Array.from({ length: 4 }, (_, index) => (
+          <div
+            key={index}
+            className="h-24 animate-pulse rounded-[var(--radius-card)] bg-white ring-1 ring-ink-100"
+          />
+        ))}
+      </div>
+      <div className="mt-5 h-64 animate-pulse rounded-[var(--radius-card)] bg-white ring-1 ring-ink-100" />
+      <p className="mt-4 text-sm text-ink-500">Carregando seu progresso…</p>
     </div>
   )
 }
@@ -37,7 +78,9 @@ function ErrorScreen({ message }: { message: string | null }) {
   return (
     <div className="mx-auto flex min-h-dvh max-w-md flex-col items-center justify-center gap-4 px-6 text-center">
       <h1 className="text-xl font-bold text-ink-900">Algo deu errado</h1>
-      <p className="text-ink-500">{message}</p>
+      <p className="text-ink-500">
+        {message ?? 'Não foi possível carregar seus dados agora.'}
+      </p>
       <Button onClick={retry}>Tentar novamente</Button>
     </div>
   )
@@ -54,7 +97,7 @@ function App() {
     void init()
   }, [init])
 
-  let content: React.ReactElement | null
+  let content: ReactElement | null
   if (status === 'loading') {
     content = <LoadingScreen />
   } else if (status === 'error') {
@@ -63,7 +106,11 @@ function App() {
     content = <Onboarding />
   } else {
     const Screen = SCREENS[view]
-    content = <Screen />
+    content = (
+      <Suspense fallback={<ProgressLoadingScreen />}>
+        <Screen />
+      </Suspense>
+    )
   }
 
   const showNav =

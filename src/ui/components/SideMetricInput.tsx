@@ -37,7 +37,7 @@ export function SideMetricInput({
         <NumberField label="Direito" value={value.right} onChange={setRight} suffix={suffix} />
       )}
       {value.side === 'both' && (
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 gap-3 min-[360px]:grid-cols-2">
           <NumberField label="Esquerdo" value={value.left} onChange={setLeft} suffix={suffix} />
           <NumberField label="Direito" value={value.right} onChange={setRight} suffix={suffix} />
         </div>

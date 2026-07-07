@@ -21,7 +21,10 @@ export function AppNav() {
   const setView = useAppStore((s) => s.setView)
 
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-10 border-t border-ink-100 bg-white/90 backdrop-blur-sm">
+    <nav
+      className="fixed inset-x-0 bottom-0 z-20 border-t border-ink-100 bg-white shadow-[0_-8px_24px_rgba(15,23,42,0.04)]"
+      aria-label="Navegação principal"
+    >
       <ul className="mx-auto flex max-w-md items-stretch justify-around px-2 pb-[env(safe-area-inset-bottom)]">
         {NAV_VIEWS.map((v) => {
           const active = view === v
@@ -31,7 +34,7 @@ export function AppNav() {
                 type="button"
                 aria-current={active ? 'page' : undefined}
                 onClick={() => setView(v)}
-                className={`flex w-full flex-col items-center gap-1 py-2.5 text-xs font-medium transition-colors ${
+                className={`flex min-h-16 w-full flex-col items-center justify-center gap-1 rounded-xl text-xs font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-brand-600 ${
                   active ? 'text-brand-600' : 'text-ink-400 hover:text-ink-600'
                 }`}
               >

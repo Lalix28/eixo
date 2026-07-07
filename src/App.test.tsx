@@ -37,7 +37,10 @@ describe('App — gate por estado', () => {
   it('mostra carregando enquanto status = loading', () => {
     setState({ status: 'loading' })
     render(<App />)
-    expect(screen.getByText('Carregando…')).toBeInTheDocument()
+    expect(
+      screen.getByRole('status', { name: 'Carregando o Eixo' }),
+    ).toBeInTheDocument()
+    expect(screen.getByText('Carregando seus dados…')).toBeInTheDocument()
   })
 
   it('mostra erro amigável com opção de tentar novamente', () => {
@@ -53,7 +56,7 @@ describe('App — gate por estado', () => {
     setState({ status: 'ready', baseline: null })
     render(<App />)
     expect(
-      screen.getByRole('heading', { name: 'Vamos calibrar o Eixo' }),
+      screen.getByRole('heading', { name: 'Configure seu Eixo' }),
     ).toBeInTheDocument()
     expect(screen.queryByRole('navigation')).not.toBeInTheDocument()
   })
@@ -71,10 +74,13 @@ describe('App — gate por estado', () => {
     expect(screen.queryByRole('navigation')).not.toBeInTheDocument()
   })
 
-  it('navega para o dashboard ao clicar em Progresso e voltar em Hoje', async () => {
+  it('carrega a tela de Progresso sob demanda pela navegação', async () => {
     setState({ status: 'ready', baseline, sessions: [], view: 'today' })
     render(<App />)
     await userEvent.click(screen.getByRole('button', { name: 'Progresso' }))
     expect(useAppStore.getState().view).toBe('progress')
+    expect(
+      await screen.findByRole('heading', { name: 'Progresso' }),
+    ).toBeInTheDocument()
   })
 })

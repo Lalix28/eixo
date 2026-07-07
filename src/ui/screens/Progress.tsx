@@ -60,7 +60,7 @@ function StatTile({ label, value }: { label: string; value: ReactNode }) {
 function DeltaBadge({ delta }: { delta: Delta }) {
   return (
     <span className="rounded-full bg-ink-100 px-3 py-1 text-xs font-medium text-ink-600">
-      Dia 1 → hoje: {delta.first} → {delta.last}
+      Primeiro → atual: {delta.first} → {delta.last}
     </span>
   )
 }
@@ -97,6 +97,26 @@ function seconds(v: number | null): ReactNode {
   return v != null ? `${v}s` : '—'
 }
 
+function ProgressError({
+  message,
+  onRetry,
+}: {
+  message: string
+  onRetry: () => void
+}) {
+  return (
+    <Card role="alert">
+      <h2 className="font-semibold text-ink-900">
+        Não foi possível atualizar o progresso
+      </h2>
+      <p className="mt-1 text-sm leading-relaxed text-ink-600">{message}</p>
+      <Button variant="secondary" className="mt-3" onClick={onRetry}>
+        Tentar novamente
+      </Button>
+    </Card>
+  )
+}
+
 export function Progress() {
   const progressData = useAppStore((s) => s.progressData)
   const progressLoading = useAppStore((s) => s.progressLoading)
@@ -127,7 +147,33 @@ export function Progress() {
   if (progressLoading && !progressData) {
     return (
       <ScreenShell title="Progresso" subtitle="Sua evolução ao longo dos dias">
-        <p className="py-10 text-center text-ink-400">Carregando…</p>
+        <div
+          className="space-y-4"
+          role="status"
+          aria-label="Carregando dados de progresso"
+        >
+          <div className="grid grid-cols-2 gap-3">
+            {Array.from({ length: 4 }, (_, index) => (
+              <div
+                key={index}
+                className="h-24 animate-pulse rounded-[var(--radius-card)] bg-white ring-1 ring-ink-100"
+              />
+            ))}
+          </div>
+          <div className="h-64 animate-pulse rounded-[var(--radius-card)] bg-white ring-1 ring-ink-100" />
+          <p className="text-sm text-ink-500">Carregando seus registros…</p>
+        </div>
+      </ScreenShell>
+    )
+  }
+
+  if (progressError && !progressData) {
+    return (
+      <ScreenShell title="Progresso" subtitle="Sua evolução ao longo dos dias">
+        <ProgressError
+          message={progressError}
+          onRetry={() => void loadProgress()}
+        />
       </ScreenShell>
     )
   }
@@ -136,16 +182,10 @@ export function Progress() {
     <ScreenShell title="Progresso" subtitle="Sua evolução ao longo dos dias">
       <div className="space-y-5">
         {progressError && (
-          <Card>
-            <p className="text-sm text-danger-500">{progressError}</p>
-            <Button
-              variant="secondary"
-              className="mt-3"
-              onClick={() => void loadProgress()}
-            >
-              Tentar novamente
-            </Button>
-          </Card>
+          <ProgressError
+            message={progressError}
+            onRetry={() => void loadProgress()}
+          />
         )}
 
         {/* Cards de resumo (dados reais; zeros e — são honestos) */}
@@ -158,64 +198,73 @@ export function Progress() {
           <StatTile label="Prancha lateral D (melhor)" value={seconds(sidePlank.right)} />
         </div>
 
-        {nothingYet && (
+        {nothingYet ? (
           <EmptyState
-            icon="📈"
-            title="Sem dados ainda"
-            description="Registre alguns treinos para ver sua evolução aqui."
+            icon={
+              <span
+                className="flex size-12 items-center justify-center rounded-full bg-brand-50 text-xl text-brand-700"
+                aria-hidden="true"
+              >
+                ↗
+              </span>
+            }
+            title="Seu progresso começa no primeiro registro"
+            description="Conclua um treino e salve o registro para acompanhar dor, mobilidade e resistência ao longo dos dias."
           />
+        ) : (
+          <>
+            <ChartSection
+              title="Dor lombar"
+              hasData={lowBack.length > 0}
+              emptyText="Registre alguns treinos para ver sua evolução aqui."
+              delta={computeDelta(lowBack)}
+            >
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={lowBack} margin={{ top: 8, right: 8, bottom: 4, left: -16 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+                  <XAxis dataKey="dayKey" tickFormatter={shortDate} fontSize={11} tickMargin={6} />
+                  <YAxis domain={[0, 10]} fontSize={11} width={28} />
+                  <Tooltip labelFormatter={(l) => shortDate(String(l))} />
+                  <Line type="monotone" dataKey="value" name="Dor lombar" stroke={C_PRIMARY} strokeWidth={2} dot={{ r: 3 }} />
+                </LineChart>
+              </ResponsiveContainer>
+            </ChartSection>
+
+            <ChartSection
+              title="Dor de quadril/adutores por lado"
+              hasData={adductorRows.length > 0}
+              emptyText="Ainda não há métricas por lado suficientes."
+            >
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={adductorRows} margin={{ top: 8, right: 8, bottom: 4, left: -16 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+                  <XAxis dataKey="dayKey" tickFormatter={shortDate} fontSize={11} tickMargin={6} />
+                  <YAxis domain={[0, 10]} fontSize={11} width={28} />
+                  <Tooltip labelFormatter={(l) => shortDate(String(l))} />
+                  <Line type="monotone" dataKey="left" name="Esquerdo" stroke={C_LEFT} strokeWidth={2} dot={{ r: 3 }} connectNulls />
+                  <Line type="monotone" dataKey="right" name="Direito" stroke={C_RIGHT} strokeWidth={2} dot={{ r: 3 }} connectNulls />
+                </LineChart>
+              </ResponsiveContainer>
+            </ChartSection>
+
+            <ChartSection
+              title="Distância mão-chão"
+              hasData={reach.length > 0}
+              emptyText="Registre a distância mão-chão para acompanhar aqui."
+              delta={computeDelta(reach)}
+            >
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={reach} margin={{ top: 8, right: 8, bottom: 4, left: -16 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+                  <XAxis dataKey="dayKey" tickFormatter={shortDate} fontSize={11} tickMargin={6} />
+                  <YAxis fontSize={11} width={28} />
+                  <Tooltip labelFormatter={(l) => shortDate(String(l))} />
+                  <Line type="monotone" dataKey="value" name="Mão-chão (cm)" stroke={C_PRIMARY} strokeWidth={2} dot={{ r: 3 }} />
+                </LineChart>
+              </ResponsiveContainer>
+            </ChartSection>
+          </>
         )}
-
-        <ChartSection
-          title="Dor lombar"
-          hasData={lowBack.length > 0}
-          emptyText="Registre alguns treinos para ver sua evolução aqui."
-          delta={computeDelta(lowBack)}
-        >
-          <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={lowBack} margin={{ top: 8, right: 8, bottom: 4, left: -16 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-              <XAxis dataKey="dayKey" tickFormatter={shortDate} fontSize={11} tickMargin={6} />
-              <YAxis domain={[0, 10]} fontSize={11} width={28} />
-              <Tooltip labelFormatter={(l) => shortDate(String(l))} />
-              <Line type="monotone" dataKey="value" name="Dor lombar" stroke={C_PRIMARY} strokeWidth={2} dot={{ r: 3 }} />
-            </LineChart>
-          </ResponsiveContainer>
-        </ChartSection>
-
-        <ChartSection
-          title="Dor de quadril/adutores por lado"
-          hasData={adductorRows.length > 0}
-          emptyText="Ainda não há métricas por lado suficientes."
-        >
-          <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={adductorRows} margin={{ top: 8, right: 8, bottom: 4, left: -16 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-              <XAxis dataKey="dayKey" tickFormatter={shortDate} fontSize={11} tickMargin={6} />
-              <YAxis domain={[0, 10]} fontSize={11} width={28} />
-              <Tooltip labelFormatter={(l) => shortDate(String(l))} />
-              <Line type="monotone" dataKey="left" name="Esquerdo" stroke={C_LEFT} strokeWidth={2} dot={{ r: 3 }} connectNulls />
-              <Line type="monotone" dataKey="right" name="Direito" stroke={C_RIGHT} strokeWidth={2} dot={{ r: 3 }} connectNulls />
-            </LineChart>
-          </ResponsiveContainer>
-        </ChartSection>
-
-        <ChartSection
-          title="Distância mão-chão"
-          hasData={reach.length > 0}
-          emptyText="Registre a distância mão-chão para acompanhar aqui."
-          delta={computeDelta(reach)}
-        >
-          <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={reach} margin={{ top: 8, right: 8, bottom: 4, left: -16 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-              <XAxis dataKey="dayKey" tickFormatter={shortDate} fontSize={11} tickMargin={6} />
-              <YAxis fontSize={11} width={28} />
-              <Tooltip labelFormatter={(l) => shortDate(String(l))} />
-              <Line type="monotone" dataKey="value" name="Mão-chão (cm)" stroke={C_PRIMARY} strokeWidth={2} dot={{ r: 3 }} />
-            </LineChart>
-          </ResponsiveContainer>
-        </ChartSection>
       </div>
     </ScreenShell>
   )

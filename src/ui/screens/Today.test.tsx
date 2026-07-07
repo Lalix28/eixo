@@ -31,7 +31,7 @@ describe('Today (dashboard)', () => {
 
   it('mostra o dia atual e o foco do plano (dia 1 = segunda)', () => {
     render(<Today />)
-    expect(screen.getByText('Dia 1 de 30')).toBeInTheDocument()
+    expect(screen.getByText(/Dia 1 de 30/)).toBeInTheDocument()
     expect(
       screen.getByText('Empurrar + core + mobilidade curta'),
     ).toBeInTheDocument()

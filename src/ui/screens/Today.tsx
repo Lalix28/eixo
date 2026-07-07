@@ -62,7 +62,10 @@ export function Today() {
   const progression = getWeekProgression(dayIndex)
 
   return (
-    <ScreenShell title="Eixo" subtitle={`Dia ${dayIndex} de ${PLAN_DAYS.length}`}>
+    <ScreenShell
+      title="Eixo"
+      subtitle={`Dia ${dayIndex} de ${PLAN_DAYS.length} · Seu plano de hoje`}
+    >
       <div className="space-y-5">
         {/* Foco do dia + status honesto */}
         <Card>
@@ -111,6 +114,14 @@ export function Today() {
 
         <SafetyCallout />
 
+        <Button
+          className="w-full shadow-sm"
+          onClick={() => void startWorkout()}
+          disabled={starting}
+        >
+          {starting ? 'Preparando treino…' : 'Começar treino'}
+        </Button>
+
         {/* Blocos previstos para hoje */}
         <section className="space-y-4">
           <h3 className="text-sm font-semibold text-ink-800">Previsto para hoje</h3>
@@ -143,14 +154,6 @@ export function Today() {
             </Card>
           ))}
         </section>
-
-        <Button
-          className="w-full"
-          onClick={() => void startWorkout()}
-          disabled={starting}
-        >
-          {starting ? 'Iniciando…' : 'Começar treino'}
-        </Button>
       </div>
     </ScreenShell>
   )

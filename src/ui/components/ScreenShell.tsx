@@ -19,12 +19,12 @@ export function ScreenShell({
   withNav = true,
 }: ScreenShellProps) {
   return (
-    <div className="mx-auto w-full max-w-md px-5 pt-8">
-      <header className="mb-6">
-        <h1 className="text-2xl font-bold tracking-tight text-ink-900">
+    <div className="mx-auto w-full max-w-md px-4 pt-[max(2rem,env(safe-area-inset-top))] sm:px-5">
+      <header className="mb-7">
+        <h1 className="text-[1.75rem] leading-tight font-bold tracking-tight text-ink-900">
           {title}
         </h1>
-        {subtitle && <p className="mt-1 text-ink-500">{subtitle}</p>}
+        {subtitle && <p className="mt-1.5 leading-relaxed text-ink-500">{subtitle}</p>}
       </header>
       <main className={withNav ? 'pb-28' : 'pb-8'}>{children}</main>
     </div>

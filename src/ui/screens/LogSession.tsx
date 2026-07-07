@@ -77,7 +77,7 @@ export function LogSession() {
   // Estado honesto quando não há treino em registro.
   if (!activeSessionId || !session) {
     return (
-      <div className="mx-auto w-full max-w-md px-5 pt-8">
+      <div className="mx-auto w-full max-w-md px-4 pt-[max(2rem,env(safe-area-inset-top))] sm:px-5">
         <h1 className="mb-6 text-2xl font-bold tracking-tight text-ink-900">
           Registro
         </h1>
@@ -111,12 +111,14 @@ export function LogSession() {
   }
 
   return (
-    <div className="mx-auto w-full max-w-md px-5 pb-40 pt-8">
+    <div className="mx-auto w-full max-w-md px-4 pt-[max(2rem,env(safe-area-inset-top))] pb-40 sm:px-5">
       <header className="mb-6">
         <h1 className="text-2xl font-bold tracking-tight text-ink-900">
           Registro do treino
         </h1>
-        <p className="mt-1 text-ink-500">Registro rápido — a maioria é opcional.</p>
+        <p className="mt-1.5 leading-relaxed text-ink-500">
+          Registre o essencial. As medidas adicionais são opcionais.
+        </p>
       </header>
 
       <div className="space-y-5">

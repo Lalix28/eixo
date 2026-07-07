@@ -4,6 +4,7 @@ import { ScreenShell } from '../components/ScreenShell'
 import { Slider } from '../components/Slider'
 import { ChoiceGroup, type Choice } from '../components/ChoiceGroup'
 import { Button } from '../components/Button'
+import { Card } from '../components/Card'
 import { useAppStore } from '../../store/useAppStore'
 import type {
   DailyMinutes,
@@ -87,8 +88,8 @@ export function Onboarding() {
 
   return (
     <ScreenShell
-      title="Vamos calibrar o Eixo"
-      subtitle="Algumas perguntas rápidas para adaptar o programa a você."
+      title="Configure seu Eixo"
+      subtitle="Leva cerca de dois minutos. Suas respostas ajustam o programa e ficam somente neste dispositivo."
       withNav={false}
     >
       <motion.div
@@ -97,60 +98,94 @@ export function Onboarding() {
         transition={{ duration: 0.25 }}
         className="space-y-6"
       >
-        <ChoiceGroup label="Nível atual" options={LEVELS} value={level} onChange={setLevel} />
+        <Card>
+          <h2 className="mb-5 text-sm font-semibold tracking-wide text-brand-700 uppercase">
+            Ponto de partida
+          </h2>
+          <div className="space-y-6">
+            <ChoiceGroup
+              label="Nível atual"
+              options={LEVELS}
+              value={level}
+              onChange={setLevel}
+            />
+            <Slider
+              label="Dor lombar média"
+              value={lowBackPain}
+              onChange={setLowBackPain}
+              minLabel="Sem dor"
+              maxLabel="Dor máxima"
+            />
+            <Slider
+              label="Desconforto em quadril/adutores"
+              value={adductorPain}
+              onChange={setAdductorPain}
+              minLabel="Sem dor"
+              maxLabel="Dor máxima"
+            />
+          </div>
+        </Card>
 
-        <div className="space-y-5 rounded-[var(--radius-card)] bg-white p-5 shadow-sm ring-1 ring-ink-100">
-          <Slider
-            label="Dor lombar média"
-            value={lowBackPain}
-            onChange={setLowBackPain}
-            minLabel="Sem dor"
-            maxLabel="Dor máxima"
-          />
-          <Slider
-            label="Dor ao abrir pernas/adutores"
-            value={adductorPain}
-            onChange={setAdductorPain}
-            minLabel="Sem dor"
-            maxLabel="Dor máxima"
-          />
+        <Card>
+          <h2 className="mb-5 text-sm font-semibold tracking-wide text-brand-700 uppercase">
+            Movimento
+          </h2>
+          <div className="space-y-6">
+            <ChoiceGroup
+              label="Qual perna tem menos força ou maior limitação?"
+              options={ATROPHY_SIDES}
+              value={atrophySide}
+              onChange={setAtrophySide}
+            />
+            <ChoiceGroup
+              label="Qual lado costuma incomodar ou travar mais?"
+              options={WORST_SIDES}
+              value={worstSide}
+              onChange={setWorstSide}
+            />
+            <ChoiceGroup
+              label="Consigo fazer tiros de corrida com conforto?"
+              options={YES_NO}
+              value={canSprint}
+              onChange={setCanSprint}
+            />
+            <ChoiceGroup
+              label="Tenho bicicleta ergométrica disponível?"
+              options={YES_NO}
+              value={hasBike}
+              onChange={setHasBike}
+            />
+          </div>
+        </Card>
+
+        <Card>
+          <h2 className="mb-5 text-sm font-semibold tracking-wide text-brand-700 uppercase">
+            Rotina
+          </h2>
+          <div className="space-y-6">
+            <ChoiceGroup
+              label="Tempo disponível por dia"
+              options={MINUTES}
+              value={dailyMinutes}
+              onChange={setDailyMinutes}
+            />
+            <ChoiceGroup
+              label="Foco principal"
+              options={GOALS}
+              value={goal}
+              onChange={setGoal}
+            />
+          </div>
+        </Card>
+
+        <div>
+          <Button className="w-full" onClick={handleSave} disabled={saving}>
+            {saving ? 'Salvando…' : 'Salvar e ver meu plano'}
+          </Button>
+          <p className="mt-3 text-center text-xs leading-relaxed text-ink-400">
+            Ajuste ou interrompa qualquer exercício se houver dor aguda.
+          </p>
         </div>
-
-        <ChoiceGroup
-          label="Qual perna tem atrofia ou maior limitação?"
-          options={ATROPHY_SIDES}
-          value={atrophySide}
-          onChange={setAtrophySide}
-        />
-        <ChoiceGroup
-          label="Qual lado costuma doer/travar mais?"
-          options={WORST_SIDES}
-          value={worstSide}
-          onChange={setWorstSide}
-        />
-        <ChoiceGroup
-          label="Consigo correr tiros?"
-          options={YES_NO}
-          value={canSprint}
-          onChange={setCanSprint}
-        />
-        <ChoiceGroup
-          label="Tenho bike ergométrica?"
-          options={YES_NO}
-          value={hasBike}
-          onChange={setHasBike}
-        />
-        <ChoiceGroup
-          label="Tempo disponível por dia"
-          options={MINUTES}
-          value={dailyMinutes}
-          onChange={setDailyMinutes}
-        />
-        <ChoiceGroup label="Meta principal" options={GOALS} value={goal} onChange={setGoal} />
-
-        <Button className="w-full" onClick={handleSave} disabled={saving}>
-          {saving ? 'Salvando…' : 'Começar'}
-        </Button>
       </motion.div>
     </ScreenShell>
   )

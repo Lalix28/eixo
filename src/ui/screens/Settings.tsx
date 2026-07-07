@@ -15,14 +15,22 @@ import {
   STOP_SIGNS_INTRO,
 } from '../../data/safety'
 
-function StatusRow({ label, ok }: { label: string; ok: boolean }) {
+function StatusRow({
+  label,
+  value,
+  ok,
+}: {
+  label: string
+  value: string
+  ok: boolean
+}) {
   return (
     <div className="flex items-center justify-between py-1.5">
       <span className="text-ink-700">{label}</span>
       <span
         className={`text-sm font-semibold ${ok ? 'text-brand-600' : 'text-ink-400'}`}
       >
-        {ok ? 'Sim' : 'Não'}
+        {value}
       </span>
     </div>
   )
@@ -62,9 +70,9 @@ export function Settings() {
         <Card>
           <h3 className="mb-3 font-semibold text-ink-900">Seus dados</h3>
           <p className="text-sm text-ink-600">
-            Limpar os dados do navegador (ou o modo privado) pode apagar seus
-            registros. Ainda não há backup/exportação — isso chega na próxima fase
-            (export JSON).
+            Limpar os dados do navegador ou usar uma janela privada pode apagar
+            seus registros. Este MVP ainda não oferece backup. A exportação em JSON
+            está prevista para a Fase 1.1.
           </p>
         </Card>
 
@@ -72,10 +80,26 @@ export function Settings() {
         <Card>
           <h3 className="mb-2 font-semibold text-ink-900">Status do dispositivo</h3>
           <div className="divide-y divide-ink-100">
-            <StatusRow label="Conexão" ok={online} />
-            <StatusRow label="Instalável (PWA)" ok={supportsServiceWorker()} />
-            <StatusRow label="Manter tela acesa (Wake Lock)" ok={supportsWakeLock()} />
-            <StatusRow label="Vibração" ok={supportsVibrate()} />
+            <StatusRow
+              label="Conexão"
+              value={online ? 'Online' : 'Offline'}
+              ok={online}
+            />
+            <StatusRow
+              label="Recursos offline"
+              value={supportsServiceWorker() ? 'Disponível' : 'Indisponível'}
+              ok={supportsServiceWorker()}
+            />
+            <StatusRow
+              label="Manter tela acesa"
+              value={supportsWakeLock() ? 'Disponível' : 'Indisponível'}
+              ok={supportsWakeLock()}
+            />
+            <StatusRow
+              label="Vibração"
+              value={supportsVibrate() ? 'Disponível' : 'Indisponível'}
+              ok={supportsVibrate()}
+            />
           </div>
           <p className="mt-2 text-xs text-ink-400">
             {online ? 'Você está online.' : 'Você está offline — o app continua funcionando.'}

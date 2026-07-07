@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { render, screen } from '@testing-library/react'
+import { act, fireEvent, render, screen } from '@testing-library/react'
 import { Progress } from './Progress'
 import { useAppStore } from '../../store/useAppStore'
 import type {
@@ -82,13 +82,33 @@ beforeEach(() => {
 })
 
 describe('Progress', () => {
+  it('mostra erro amigável e permite tentar novamente', () => {
+    const loadProgress = vi.fn()
+    useAppStore.setState({
+      loadProgress,
+      progressLoading: false,
+      progressError: 'Falha no armazenamento local.',
+      progressData: null,
+    })
+
+    render(<Progress />)
+
+    expect(
+      screen.getByText('Não foi possível atualizar o progresso'),
+    ).toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: 'Tentar novamente' }))
+    expect(loadProgress).toHaveBeenCalled()
+  })
+
   it('estado vazio honesto sem dados', () => {
     setProgress({})
     render(<Progress />)
-    expect(screen.getByText('Sem dados ainda')).toBeInTheDocument()
     expect(
-      screen.getByText('Ainda não há métricas por lado suficientes.'),
+      screen.getByText('Seu progresso começa no primeiro registro'),
     ).toBeInTheDocument()
+    expect(
+      screen.queryByText('Ainda não há métricas por lado suficientes.'),
+    ).not.toBeInTheDocument()
     // melhores tempos por lado mostram — quando não há dados
     expect(screen.getAllByText('—').length).toBeGreaterThanOrEqual(4)
   })
@@ -132,18 +152,20 @@ describe('Progress', () => {
     ).not.toBeInTheDocument()
   })
 
-  it('delta Dia 1 → hoje só aparece com ≥2 pontos', () => {
+  it('delta entre primeiro e atual só aparece com ≥2 pontos', () => {
     setProgress({ logs: [log('2026-01-01', { lowBackPainAfter: 5 })] })
     const { rerender } = render(<Progress />)
-    expect(screen.queryByText(/Dia 1 → hoje/)).not.toBeInTheDocument()
+    expect(screen.queryByText(/Primeiro → atual/)).not.toBeInTheDocument()
 
-    setProgress({
-      logs: [
-        log('2026-01-01', { lowBackPainAfter: 5 }),
-        log('2026-01-05', { lowBackPainAfter: 3 }),
-      ],
+    act(() => {
+      setProgress({
+        logs: [
+          log('2026-01-01', { lowBackPainAfter: 5 }),
+          log('2026-01-05', { lowBackPainAfter: 3 }),
+        ],
+      })
     })
     rerender(<Progress />)
-    expect(screen.getByText(/Dia 1 → hoje/)).toBeInTheDocument()
+    expect(screen.getByText(/Primeiro → atual/)).toBeInTheDocument()
   })
 })

@@ -14,9 +14,9 @@ describe('Onboarding', () => {
     expect(screen.getByText('Nível atual')).toBeInTheDocument()
     expect(screen.getByText('Dor lombar média')).toBeInTheDocument()
     expect(
-      screen.getByText('Qual perna tem atrofia ou maior limitação?'),
+      screen.getByText('Qual perna tem menos força ou maior limitação?'),
     ).toBeInTheDocument()
-    expect(screen.getByText('Meta principal')).toBeInTheDocument()
+    expect(screen.getByText('Foco principal')).toBeInTheDocument()
   })
 
   it('ao salvar, chama submitOnboarding com as respostas coletadas', async () => {
@@ -26,7 +26,9 @@ describe('Onboarding', () => {
     render(<Onboarding />)
     // ajusta uma escolha para garantir que o estado é coletado
     await userEvent.click(screen.getByRole('button', { name: 'Intermediário' }))
-    await userEvent.click(screen.getByRole('button', { name: 'Começar' }))
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Salvar e ver meu plano' }),
+    )
 
     expect(submit).toHaveBeenCalledTimes(1)
     expect(submit).toHaveBeenCalledWith(

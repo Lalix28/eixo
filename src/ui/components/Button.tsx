@@ -8,8 +8,8 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const base =
-  'inline-flex items-center justify-center gap-2 rounded-full font-semibold ' +
-  'px-6 py-3.5 text-base transition-colors select-none ' +
+  'inline-flex min-h-12 items-center justify-center gap-2 rounded-full font-semibold ' +
+  'px-6 py-3 text-base transition-colors select-none ' +
   'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600 ' +
   'disabled:opacity-50 disabled:pointer-events-none'
 

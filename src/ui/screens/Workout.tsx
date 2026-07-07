@@ -67,7 +67,7 @@ export function Workout() {
   const tone = timer.snapshot.phaseKind
 
   return (
-    <div className="mx-auto flex min-h-dvh max-w-md flex-col px-5 pb-8 pt-6">
+    <div className="mx-auto flex min-h-dvh max-w-md flex-col px-4 pt-[max(1.5rem,env(safe-area-inset-top))] pb-8 sm:px-5">
       {/* Cabeçalho */}
       <header className="flex items-center justify-between">
         <div>
@@ -84,7 +84,7 @@ export function Workout() {
           <button
             type="button"
             onClick={() => void finishWorkout('partial')}
-            className="text-sm font-medium text-ink-400 hover:text-ink-600"
+            className="min-h-11 rounded-full px-3 text-sm font-medium text-ink-500 hover:bg-ink-100 hover:text-ink-700 focus-visible:outline-2 focus-visible:outline-brand-600"
           >
             Finalizar
           </button>
@@ -93,7 +93,12 @@ export function Workout() {
 
       {finished ? (
         <div className="flex flex-1 flex-col items-center justify-center gap-6 text-center">
-          <div className="text-5xl">✅</div>
+          <div
+            className="flex size-16 items-center justify-center rounded-full bg-brand-50 text-3xl text-brand-700"
+            aria-hidden="true"
+          >
+            ✓
+          </div>
           <div>
             <h1 className="text-2xl font-bold text-ink-900">Treino concluído</h1>
             <p className="mt-1 text-ink-500">Vamos registrar como foi.</p>
@@ -181,7 +186,7 @@ export function Workout() {
                 <button
                   type="button"
                   onClick={advance}
-                  className="w-full py-2 text-sm font-medium text-ink-400 hover:text-ink-600"
+                  className="min-h-11 w-full rounded-full px-3 py-2 text-sm font-medium text-ink-500 hover:bg-ink-100 hover:text-ink-700 focus-visible:outline-2 focus-visible:outline-brand-600"
                 >
                   Pular exercício
                 </button>

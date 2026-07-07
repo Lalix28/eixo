@@ -28,7 +28,7 @@ export function BotheredExercisePicker({
       <select
         value={value ?? ''}
         onChange={(e) => onChange(e.target.value || null)}
-        className="w-full rounded-xl border border-ink-200 bg-white px-3 py-2.5 text-ink-900 outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20"
+        className="min-h-11 w-full rounded-xl border border-ink-200 bg-white px-3 py-2.5 text-ink-900 outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20"
       >
         <option value="">Nenhum</option>
         {unique.map((r) => (
