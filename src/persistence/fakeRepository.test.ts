@@ -36,4 +36,14 @@ describe('FakeRepository (paridade de contrato)', () => {
     await repo.resetAll()
     expect(await repo.getBaseline()).toBeUndefined()
   })
+
+  it('exportData funciona sem nenhum dado salvo', async () => {
+    const bundle = await new FakeRepository().exportData()
+    expect(bundle.data).toEqual({
+      baselines: [],
+      sessions: [],
+      logs: [],
+      sideMetrics: [],
+    })
+  })
 })

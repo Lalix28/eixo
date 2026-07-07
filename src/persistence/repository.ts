@@ -9,6 +9,7 @@ import type {
   SideMetric,
   SideMetricKind,
 } from '../domain/types'
+import type { ExportBundle } from './exportBundle'
 
 /**
  * Contrato de persistência. A UI e o store dependem desta interface,
@@ -89,6 +90,8 @@ export interface Repository {
   // Consultas
   getDayData(dayKey: string): Promise<DataBundle>
   getProgressData(): Promise<DataBundle>
+  /** Snapshot completo e versionado para backup manual local. */
+  exportData(): Promise<ExportBundle>
 
   // Manutenção
   resetAll(): Promise<void>

@@ -10,12 +10,14 @@
 - Registro pós-treino com status, dor, esforço, medidas por lado e observações.
 - Progresso baseado somente em registros reais, com resumos e gráficos.
 - Persistência local em IndexedDB, sem conta ou servidor.
+- Exportação manual dos dados locais em JSON versionado.
 - PWA instalável, shell offline e aviso de atualização.
 - Navegação mobile-first entre Hoje, Progresso e Ajustes.
 
 ## Fora deste MVP
 
-- Exportação e importação de dados.
+- Importação ou restauração de dados exportados.
+- Exportação em CSV.
 - Backend, login, analytics ou planos pagos.
 - Sincronização na nuvem ou entre dispositivos.
 - Multiusuário, notificações nativas e recursos de IA.
@@ -49,14 +51,12 @@ npm run lint
 ## Limitações conhecidas
 
 - Os dados existem apenas no armazenamento do navegador atual. Limpar os dados do site, usar navegação privada ou trocar de dispositivo pode causar perda dos registros.
-- Ainda não há backup ou restauração.
+- O backup JSON é manual e ainda não pode ser restaurado pelo app.
 - Instalação PWA e algumas APIs do dispositivo dependem do navegador e de contexto seguro (`https` ou `localhost`).
 - Wake Lock e vibração usam melhoria progressiva: o treino continua funcionando quando essas APIs não estão disponíveis.
 - A tela Progresso é carregada sob demanda. O chunk inclui o Recharts e também entra no precache da PWA.
 
 ## Próximos passos sugeridos
 
-1. Fase 1.1: exportação JSON local, com formato versionado e teste de integridade.
-2. Depois da exportação, avaliar importação/restauração com validação explícita.
-3. Fazer uma rodada de uso real em celulares iOS e Android para conferir instalação, áreas seguras e Wake Lock.
-
+1. Avaliar importação/restauração do JSON com validação explícita de versão e conteúdo.
+2. Fazer uma rodada de uso real em celulares iOS e Android para conferir instalação, download, áreas seguras e Wake Lock.

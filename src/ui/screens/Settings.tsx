@@ -1,7 +1,10 @@
-import type { ReactNode } from 'react'
+import { useState, type ReactNode } from 'react'
 import { ScreenShell } from '../components/ScreenShell'
 import { Card } from '../components/Card'
+import { Button } from '../components/Button'
 import { useOnline } from '../../hooks/useOnline'
+import { useAppStore } from '../../store/useAppStore'
+import { downloadExportJson } from '../../lib/downloadJson'
 import {
   supportsServiceWorker,
   supportsVibrate,
@@ -47,6 +50,32 @@ function InfoRow({ children }: { children: ReactNode }) {
 
 export function Settings() {
   const online = useOnline()
+  const exportData = useAppStore((state) => state.exportData)
+  const [exporting, setExporting] = useState(false)
+  const [exportResult, setExportResult] = useState<
+    { kind: 'success' | 'error'; message: string } | undefined
+  >()
+
+  async function handleExport() {
+    if (exporting) return
+    setExporting(true)
+    setExportResult(undefined)
+    try {
+      const bundle = await exportData()
+      downloadExportJson(bundle)
+      setExportResult({
+        kind: 'success',
+        message: 'Backup exportado. Guarde o arquivo em um local seguro.',
+      })
+    } catch {
+      setExportResult({
+        kind: 'error',
+        message: 'Não foi possível exportar seus dados. Tente novamente.',
+      })
+    } finally {
+      setExporting(false)
+    }
+  }
 
   return (
     <ScreenShell title="Ajustes" subtitle="Informações e segurança">
@@ -71,9 +100,40 @@ export function Settings() {
           <h3 className="mb-3 font-semibold text-ink-900">Seus dados</h3>
           <p className="text-sm text-ink-600">
             Limpar os dados do navegador ou usar uma janela privada pode apagar
-            seus registros. Este MVP ainda não oferece backup. A exportação em JSON
-            está prevista para a Fase 1.1.
+            seus registros. O backup é manual e deve ser guardado fora do navegador.
           </p>
+        </Card>
+
+        <Card>
+          <h3 className="mb-2 font-semibold text-ink-900">Backup local</h3>
+          <p className="text-sm leading-relaxed text-ink-600">
+            Seus dados ficam neste dispositivo. Você pode exportar um arquivo JSON
+            para guardar uma cópia.
+          </p>
+          <p className="mt-3 rounded-xl bg-warn-500/10 p-3 text-xs leading-relaxed text-ink-700">
+            Este arquivo pode conter dados pessoais de saúde e treino. Guarde em
+            local seguro.
+          </p>
+          <Button
+            variant="secondary"
+            className="mt-4 w-full"
+            onClick={() => void handleExport()}
+            disabled={exporting}
+          >
+            {exporting ? 'Preparando arquivo…' : 'Exportar JSON'}
+          </Button>
+          {exportResult && (
+            <p
+              role={exportResult.kind === 'error' ? 'alert' : 'status'}
+              className={`mt-3 text-sm ${
+                exportResult.kind === 'error'
+                  ? 'text-danger-500'
+                  : 'text-brand-700'
+              }`}
+            >
+              {exportResult.message}
+            </p>
+          )}
         </Card>
 
         {/* Status do dispositivo */}

@@ -16,6 +16,7 @@ import type {
   Repository,
   SideMetricInput,
 } from '../persistence/repository'
+import type { ExportBundle } from '../persistence/exportBundle'
 
 /** Campos globais do registro (tudo exceto sessionId/dayKey, carimbados no store). */
 export type LogGlobals = Omit<NewLog, 'sessionId' | 'dayKey'>
@@ -86,6 +87,8 @@ interface AppState {
   saveSessionLog: (submission: LogSubmission) => Promise<void>
   /** Carrega o snapshot de progresso do repositório. */
   loadProgress: () => Promise<void>
+  /** Obtém um snapshot completo para backup; o download fica na camada de UI. */
+  exportData: () => Promise<ExportBundle>
 }
 
 /**
@@ -228,6 +231,8 @@ export function createAppStore(repo: Repository) {
         set({ progressLoading: false, progressError: IDB_ERROR_MESSAGE })
       }
     },
+
+    exportData: () => repo.exportData(),
   }))
 }
 

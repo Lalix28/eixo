@@ -165,6 +165,37 @@ describe('DexieRepository — consultas e reset', () => {
     expect(bundle.sessions).toHaveLength(1)
   })
 
+  it('exportData retorna metadados e todas as tabelas reais', async () => {
+    const baseline = await repo.saveBaseline(baselineInput)
+    const session = await repo.createSession({
+      planDayId: 'day-01',
+      dayIndex: 1,
+      dayKey: '2026-01-05',
+      startedAt: 0,
+      status: 'completed',
+    })
+    const log = await repo.saveLog({
+      sessionId: session.id,
+      dayKey: session.dayKey,
+      lowBackPainAfter: 2,
+    })
+    await repo.saveSideMetrics(log.id, session.dayKey, [
+      { metric: 'side_plank_sec', side: 'left', phase: 'single', value: 25 },
+    ])
+
+    const bundle = await repo.exportData()
+
+    expect(bundle.app).toBe('Eixo')
+    expect(bundle.exportVersion).toBe(1)
+    expect(bundle.exportedAt).toMatch(/^\d{4}-\d{2}-\d{2}T/)
+    expect(bundle.source).toBe('local-indexeddb')
+    expect(bundle.warning).toMatch(/Backup local/)
+    expect(bundle.data.baselines).toEqual([baseline])
+    expect(bundle.data.sessions).toEqual([session])
+    expect(bundle.data.logs).toEqual([log])
+    expect(bundle.data.sideMetrics).toHaveLength(1)
+  })
+
   it('resetAll limpa todas as tabelas', async () => {
     await repo.saveBaseline(baselineInput)
     await repo.createSession({

@@ -229,3 +229,19 @@ describe('useAppStore — progresso', () => {
     expect(pd?.sideMetrics).toHaveLength(1)
   })
 })
+
+describe('useAppStore — exportação', () => {
+  it('obtém o bundle completo exclusivamente pelo repositório', async () => {
+    const repo = new FakeRepository()
+    const store = createAppStore(repo)
+    await store.getState().submitOnboarding(answers)
+    await store.getState().startWorkout()
+
+    const bundle = await store.getState().exportData()
+
+    expect(bundle.data.baselines).toHaveLength(1)
+    expect(bundle.data.sessions).toHaveLength(1)
+    expect(bundle.data.logs).toHaveLength(0)
+    expect(bundle.data.sideMetrics).toHaveLength(0)
+  })
+})

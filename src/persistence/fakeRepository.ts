@@ -7,6 +7,7 @@ import {
   type SideMetricInput,
 } from './repository'
 import { expandSideMetricInputs, toBaseline } from './mappers'
+import { buildExportBundle, type ExportBundle } from './exportBundle'
 import type {
   Baseline,
   BaselineInput,
@@ -137,6 +138,15 @@ export class FakeRepository implements Repository {
       logs: [...this.logs],
       sideMetrics: [...this.sideMetrics],
     }
+  }
+
+  async exportData(): Promise<ExportBundle> {
+    return buildExportBundle({
+      baselines: [...this.baselines],
+      sessions: [...this.sessions],
+      logs: [...this.logs],
+      sideMetrics: [...this.sideMetrics],
+    })
   }
 
   async resetAll(): Promise<void> {

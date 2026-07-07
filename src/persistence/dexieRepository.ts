@@ -9,6 +9,7 @@ import {
   type SideMetricInput,
 } from './repository'
 import { expandSideMetricInputs, toBaseline } from './mappers'
+import { buildExportBundle, type ExportBundle } from './exportBundle'
 import type {
   Baseline,
   BaselineInput,
@@ -168,6 +169,18 @@ export class DexieRepository implements Repository {
         this.db.sideMetrics.toArray(),
       ])
       return { sessions, logs, sideMetrics }
+    })
+  }
+
+  exportData(): Promise<ExportBundle> {
+    return this.run(async () => {
+      const [baselines, sessions, logs, sideMetrics] = await Promise.all([
+        this.db.baselines.toArray(),
+        this.db.sessions.toArray(),
+        this.db.logs.toArray(),
+        this.db.sideMetrics.toArray(),
+      ])
+      return buildExportBundle({ baselines, sessions, logs, sideMetrics })
     })
   }
 
