@@ -10,6 +10,7 @@ import {
 } from './repository'
 import { expandSideMetricInputs, toBaseline } from './mappers'
 import { buildExportBundle, type ExportBundle } from './exportBundle'
+import { createId } from '../lib/createId'
 import type {
   Baseline,
   BaselineInput,
@@ -17,10 +18,6 @@ import type {
   SessionLog,
   SideMetric,
 } from '../domain/types'
-
-function uuid(): string {
-  return crypto.randomUUID()
-}
 
 function nowIso(): string {
   return new Date().toISOString()
@@ -34,13 +31,13 @@ export class DexieRepository implements Repository {
     this.db = database
   }
 
-  /** Envolve operações do Dexie, traduzindo falhas em PersistenceError. */
+  /** Preserva a causa técnica e expõe um erro único de dados locais à aplicação. */
   private async run<T>(op: () => Promise<T>): Promise<T> {
     try {
       return await op()
     } catch (err) {
       throw new PersistenceError(
-        'Falha ao acessar o armazenamento local (IndexedDB).',
+        'Não foi possível concluir a operação com os dados locais.',
         err,
       )
     }
@@ -49,8 +46,11 @@ export class DexieRepository implements Repository {
   // --- Baseline ---
 
   saveBaseline(input: BaselineInput): Promise<Baseline> {
-    const baseline = toBaseline(input, { id: uuid(), createdAt: nowIso() })
     return this.run(async () => {
+      const baseline = toBaseline(input, {
+        id: createId(),
+        createdAt: nowIso(),
+      })
       await this.db.baselines.add(baseline)
       return baseline
     })
@@ -66,17 +66,17 @@ export class DexieRepository implements Repository {
   // --- Sessions ---
 
   createSession(input: NewSession): Promise<Session> {
-    const session: Session = {
-      id: uuid(),
-      planDayId: input.planDayId,
-      dayIndex: input.dayIndex,
-      dayKey: input.dayKey,
-      startedAt: input.startedAt,
-      completedAt: input.completedAt ?? null,
-      status: input.status,
-      createdAt: nowIso(),
-    }
     return this.run(async () => {
+      const session: Session = {
+        id: createId(),
+        planDayId: input.planDayId,
+        dayIndex: input.dayIndex,
+        dayKey: input.dayKey,
+        startedAt: input.startedAt,
+        completedAt: input.completedAt ?? null,
+        status: input.status,
+        createdAt: nowIso(),
+      }
       await this.db.sessions.add(session)
       return session
     })
@@ -95,21 +95,21 @@ export class DexieRepository implements Repository {
   // --- Logs ---
 
   saveLog(input: NewLog): Promise<SessionLog> {
-    const log: SessionLog = {
-      id: uuid(),
-      sessionId: input.sessionId,
-      dayKey: input.dayKey,
-      lowBackPainBefore: input.lowBackPainBefore ?? null,
-      lowBackPainAfter: input.lowBackPainAfter ?? null,
-      rpe: input.rpe ?? null,
-      frontPlankSec: input.frontPlankSec ?? null,
-      reachToFloorCm: input.reachToFloorCm ?? null,
-      botheredExerciseId: input.botheredExerciseId ?? null,
-      botheredSide: input.botheredSide ?? 'not_applicable',
-      notes: input.notes ?? null,
-      createdAt: nowIso(),
-    }
     return this.run(async () => {
+      const log: SessionLog = {
+        id: createId(),
+        sessionId: input.sessionId,
+        dayKey: input.dayKey,
+        lowBackPainBefore: input.lowBackPainBefore ?? null,
+        lowBackPainAfter: input.lowBackPainAfter ?? null,
+        rpe: input.rpe ?? null,
+        frontPlankSec: input.frontPlankSec ?? null,
+        reachToFloorCm: input.reachToFloorCm ?? null,
+        botheredExerciseId: input.botheredExerciseId ?? null,
+        botheredSide: input.botheredSide ?? 'not_applicable',
+        notes: input.notes ?? null,
+        createdAt: nowIso(),
+      }
       await this.db.logs.add(log)
       return log
     })
@@ -132,13 +132,13 @@ export class DexieRepository implements Repository {
     dayKey: string,
     inputs: SideMetricInput[],
   ): Promise<SideMetric[]> {
-    const rows: SideMetric[] = expandSideMetricInputs(inputs).map((e) => ({
-      id: uuid(),
-      logId,
-      dayKey,
-      ...e,
-    }))
     return this.run(async () => {
+      const rows: SideMetric[] = expandSideMetricInputs(inputs).map((e) => ({
+        id: createId(),
+        logId,
+        dayKey,
+        ...e,
+      }))
       if (rows.length > 0) await this.db.sideMetrics.bulkAdd(rows)
       return rows
     })

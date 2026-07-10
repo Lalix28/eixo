@@ -11,7 +11,7 @@ interface RingProgressProps {
 
 const TONE_CLASS: Record<NonNullable<RingProgressProps['tone']>, string> = {
   work: 'text-brand-600',
-  rest: 'text-warn-500',
+  rest: 'text-warn-700',
   done: 'text-brand-500',
 }
 
@@ -30,12 +30,13 @@ export function RingProgress({
 
   return (
     <div
-      className="relative aspect-square max-w-full"
-      style={{ width: `min(${size}px, 76vw)` }}
+      className="relative aspect-square max-w-full drop-shadow-[0_10px_24px_rgba(5,150,105,0.08)]"
+      style={{ width: `min(${size}px, 72vw)` }}
     >
       <svg
         viewBox={`0 0 ${size} ${size}`}
         className={`h-full w-full ${TONE_CLASS[tone]}`}
+        aria-hidden="true"
       >
         <circle
           cx={size / 2}

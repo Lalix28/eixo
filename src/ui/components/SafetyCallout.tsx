@@ -6,9 +6,14 @@ import { PAIN_REFERENCE, SAFETY_DISCLAIMER } from '../../data/safety'
  */
 export function SafetyCallout() {
   return (
-    <div className="rounded-2xl border border-warn-500/30 bg-warn-500/10 p-4">
-      <p className="text-sm font-medium text-ink-800">{SAFETY_DISCLAIMER}</p>
-      <p className="mt-1 text-sm text-ink-600">{PAIN_REFERENCE}</p>
-    </div>
+    <aside className="rounded-[var(--radius-card)] border border-warn-500/30 bg-[#fffbeb] p-4">
+      <p className="text-sm font-semibold text-ink-800">Atenção ao movimento</p>
+      <p className="mt-1.5 text-sm leading-relaxed text-ink-700">
+        {SAFETY_DISCLAIMER}
+      </p>
+      <p className="mt-1 text-sm leading-relaxed text-ink-600">
+        {PAIN_REFERENCE}
+      </p>
+    </aside>
   )
 }

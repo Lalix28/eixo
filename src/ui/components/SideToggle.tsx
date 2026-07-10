@@ -1,4 +1,6 @@
 import type { Side } from '../../domain/types'
+import { motion } from 'framer-motion'
+import { QUICK_TRANSITION, TAP_SCALE } from '../motion'
 
 interface SideToggleProps {
   value: Side
@@ -26,23 +28,26 @@ export function SideToggle({
   if (includeNotApplicable) options.push('not_applicable')
 
   return (
-    <div className="flex flex-wrap gap-2">
+    <div className="inline-flex max-w-full flex-wrap gap-1 rounded-lg bg-ink-100 p-1">
       {options.map((side) => {
         const active = side === value
         return (
-          <button
+          <motion.button
             key={side}
             type="button"
             aria-pressed={active}
             onClick={() => onChange(side)}
-            className={`min-h-11 rounded-full px-3 py-2 text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600 ${
+            animate={{ scale: active ? 1.01 : 1 }}
+            whileTap={{ scale: TAP_SCALE }}
+            transition={QUICK_TRANSITION}
+            className={`min-h-11 rounded-md px-3 py-2 text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600 ${
               active
-                ? 'bg-brand-600 text-white'
-                : 'bg-ink-100 text-ink-700 hover:bg-ink-200'
+                ? 'bg-white text-brand-800 shadow-sm ring-1 ring-ink-200'
+                : 'text-ink-600 hover:bg-white/70 hover:text-ink-800'
             }`}
           >
             {LABEL[side]}
-          </button>
+          </motion.button>
         )
       })}
     </div>

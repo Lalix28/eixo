@@ -10,13 +10,18 @@ const OPTIONS: Choice<SessionStatus>[] = [
 interface StatusChoiceProps {
   value: SessionStatus
   onChange: (status: SessionStatus) => void
+  label?: string
 }
 
 /** Escolha do status do treino (campo obrigatório). */
-export function StatusChoice({ value, onChange }: StatusChoiceProps) {
+export function StatusChoice({
+  value,
+  onChange,
+  label = 'Como foi o treino?',
+}: StatusChoiceProps) {
   return (
     <ChoiceGroup
-      label="Como foi o treino?"
+      label={label}
       options={OPTIONS}
       value={value}
       onChange={onChange}

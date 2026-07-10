@@ -8,15 +8,17 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const base =
-  'inline-flex min-h-12 items-center justify-center gap-2 rounded-full font-semibold ' +
-  'px-6 py-3 text-base transition-colors select-none ' +
+  'inline-flex min-h-12 items-center justify-center gap-2 rounded-lg font-semibold ' +
+  'px-5 py-3 text-base transition-[background-color,color,box-shadow,transform] select-none ' +
   'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600 ' +
-  'disabled:opacity-50 disabled:pointer-events-none'
+  'active:scale-[0.98] disabled:pointer-events-none disabled:bg-ink-100 ' +
+  'disabled:text-ink-400 disabled:shadow-none'
 
 const variants: Record<Variant, string> = {
-  primary: 'bg-brand-600 text-white hover:bg-brand-700 active:bg-brand-800',
+  primary:
+    'bg-brand-700 text-white shadow-sm hover:bg-brand-800 hover:shadow active:bg-brand-900',
   secondary:
-    'bg-brand-50 text-brand-700 hover:bg-brand-100 active:bg-brand-200',
+    'bg-brand-50 text-brand-800 ring-1 ring-inset ring-brand-200 hover:bg-brand-100 active:bg-brand-200',
   ghost: 'bg-transparent text-ink-700 hover:bg-ink-100 active:bg-ink-200',
 }
 

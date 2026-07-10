@@ -13,7 +13,7 @@ export function NotesField({ value, onChange }: NotesFieldProps) {
         onChange={(e) => onChange(e.target.value)}
         rows={3}
         placeholder="Sensações ou ajustes para o próximo treino"
-        className="w-full resize-none rounded-xl border border-ink-200 bg-white px-3 py-2.5 text-ink-900 outline-none placeholder:text-ink-400 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20"
+        className="w-full resize-y rounded-lg border border-ink-300 bg-white px-3 py-3 text-ink-900 outline-none placeholder:text-ink-400 focus:border-brand-600 focus:ring-2 focus:ring-brand-500/20"
       />
     </label>
   )

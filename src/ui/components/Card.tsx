@@ -2,13 +2,21 @@ import type { HTMLAttributes, ReactNode } from 'react'
 
 interface CardProps extends HTMLAttributes<HTMLDivElement> {
   children: ReactNode
+  padded?: boolean
 }
 
-/** Superfície espaçosa com respiro visual — bloco base do layout. */
-export function Card({ className = '', children, ...rest }: CardProps) {
+/** Superfície base do produto, com borda e elevação discretas. */
+export function Card({
+  className = '',
+  children,
+  padded = true,
+  ...rest
+}: CardProps) {
   return (
     <div
-      className={`rounded-[var(--radius-card)] bg-white p-5 shadow-sm ring-1 ring-ink-100 sm:p-6 ${className}`}
+      className={`rounded-[var(--radius-card)] border border-ink-200/80 bg-white shadow-[0_1px_2px_rgba(15,23,42,0.035)] ${
+        padded ? 'p-5 sm:p-6' : ''
+      } ${className}`}
       {...rest}
     >
       {children}

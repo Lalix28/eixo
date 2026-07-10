@@ -1,3 +1,6 @@
+import { motion } from 'framer-motion'
+import { QUICK_TRANSITION } from '../motion'
+
 interface SliderProps {
   label: string
   value: number
@@ -24,12 +27,18 @@ export function Slider({
   maxLabel,
 }: SliderProps) {
   return (
-    <div>
-      <div className="mb-2 flex items-baseline justify-between">
+    <div className="min-w-0">
+      <div className="flex items-center justify-between gap-4">
         <span className="font-medium text-ink-800">{label}</span>
-        <span className="text-lg font-bold tabular-nums text-brand-600">
+        <motion.span
+          key={value}
+          initial={{ opacity: 0.65, scale: 0.96 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={QUICK_TRANSITION}
+          className="flex min-h-8 min-w-10 items-center justify-center rounded-md bg-brand-50 px-2 text-lg font-bold tabular-nums text-brand-700"
+        >
           {value}
-        </span>
+        </motion.span>
       </div>
       <input
         type="range"
@@ -39,10 +48,10 @@ export function Slider({
         value={value}
         onChange={(e) => onChange(Number(e.target.value))}
         aria-label={label}
-        className="h-2 w-full cursor-pointer appearance-none rounded-full bg-ink-200 accent-brand-600"
+        className="mt-1 h-11 w-full cursor-pointer appearance-none rounded-full bg-transparent accent-brand-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600"
       />
       {(minLabel || maxLabel) && (
-        <div className="mt-1 flex justify-between text-xs text-ink-400">
+        <div className="flex justify-between gap-4 text-xs text-ink-500">
           <span>{minLabel}</span>
           <span>{maxLabel}</span>
         </div>

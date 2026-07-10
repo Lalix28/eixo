@@ -5,6 +5,7 @@ import { Slider } from '../components/Slider'
 import { ChoiceGroup, type Choice } from '../components/ChoiceGroup'
 import { Button } from '../components/Button'
 import { Card } from '../components/Card'
+import { staggerContainer, staggerItem } from '../motion'
 import { useAppStore } from '../../store/useAppStore'
 import type {
   DailyMinutes,
@@ -89,19 +90,27 @@ export function Onboarding() {
   return (
     <ScreenShell
       title="Configure seu Eixo"
-      subtitle="Leva cerca de dois minutos. Suas respostas ajustam o programa e ficam somente neste dispositivo."
+      subtitle="Um ponto de partida simples para ajustar o programa. Suas respostas ficam somente neste dispositivo."
       withNav={false}
+      width="focused"
     >
       <motion.div
-        initial={{ opacity: 0, y: 8 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.25 }}
-        className="space-y-6"
+        variants={staggerContainer}
+        initial="initial"
+        animate="enter"
+        className="space-y-5 sm:space-y-6"
       >
-        <Card>
-          <h2 className="mb-5 text-sm font-semibold tracking-wide text-brand-700 uppercase">
-            Ponto de partida
-          </h2>
+        <motion.div variants={staggerItem}>
+          <Card>
+          <div className="mb-5 border-b border-ink-100 pb-4">
+            <p className="text-xs font-semibold text-brand-700">1 de 3</p>
+            <h2 className="mt-1 text-lg font-semibold text-ink-900">
+              Ponto de partida
+            </h2>
+            <p className="mt-1 text-sm text-ink-600">
+              Considere como você se sente na maior parte dos dias.
+            </p>
+          </div>
           <div className="space-y-6">
             <ChoiceGroup
               label="Nível atual"
@@ -124,12 +133,18 @@ export function Onboarding() {
               maxLabel="Dor máxima"
             />
           </div>
-        </Card>
+          </Card>
+        </motion.div>
 
-        <Card>
-          <h2 className="mb-5 text-sm font-semibold tracking-wide text-brand-700 uppercase">
-            Movimento
-          </h2>
+        <motion.div variants={staggerItem}>
+          <Card>
+          <div className="mb-5 border-b border-ink-100 pb-4">
+            <p className="text-xs font-semibold text-brand-700">2 de 3</p>
+            <h2 className="mt-1 text-lg font-semibold text-ink-900">Movimento</h2>
+            <p className="mt-1 text-sm text-ink-600">
+              Isso ajuda a adaptar exercícios e condicionamento.
+            </p>
+          </div>
           <div className="space-y-6">
             <ChoiceGroup
               label="Qual perna tem menos força ou maior limitação?"
@@ -156,12 +171,18 @@ export function Onboarding() {
               onChange={setHasBike}
             />
           </div>
-        </Card>
+          </Card>
+        </motion.div>
 
-        <Card>
-          <h2 className="mb-5 text-sm font-semibold tracking-wide text-brand-700 uppercase">
-            Rotina
-          </h2>
+        <motion.div variants={staggerItem}>
+          <Card>
+          <div className="mb-5 border-b border-ink-100 pb-4">
+            <p className="text-xs font-semibold text-brand-700">3 de 3</p>
+            <h2 className="mt-1 text-lg font-semibold text-ink-900">Rotina</h2>
+            <p className="mt-1 text-sm text-ink-600">
+              Escolha um ritmo que seja viável manter.
+            </p>
+          </div>
           <div className="space-y-6">
             <ChoiceGroup
               label="Tempo disponível por dia"
@@ -176,16 +197,35 @@ export function Onboarding() {
               onChange={setGoal}
             />
           </div>
-        </Card>
+          </Card>
+        </motion.div>
 
-        <div>
+        <motion.div variants={staggerItem} className="border-t border-ink-200 pt-5">
+          <div className="mb-4 flex flex-wrap gap-x-6 gap-y-2 text-sm text-ink-600">
+            <span>
+              <strong className="font-semibold text-ink-900">{dailyMinutes} min</strong>{' '}
+              por dia
+            </span>
+            <span>
+              Nível{' '}
+              <strong className="font-semibold text-ink-900">
+                {LEVELS.find((option) => option.value === level)?.label}
+              </strong>
+            </span>
+          </div>
           <Button className="w-full" onClick={handleSave} disabled={saving}>
             {saving ? 'Salvando…' : 'Salvar e ver meu plano'}
           </Button>
-          <p className="mt-3 text-center text-xs leading-relaxed text-ink-400">
+          <span className="sr-only" role="status" aria-live="polite">
+            {saving ? 'Salvando suas escolhas' : ''}
+          </span>
+          <p
+            className="mt-3 text-center text-xs leading-relaxed text-ink-500"
+            aria-live="polite"
+          >
             Ajuste ou interrompa qualquer exercício se houver dor aguda.
           </p>
-        </div>
+        </motion.div>
       </motion.div>
     </ScreenShell>
   )

@@ -5,6 +5,7 @@ import {
   type ComponentType,
   type ReactElement,
 } from 'react'
+import { MotionConfig, motion } from 'framer-motion'
 import { useAppStore, type View } from './store/useAppStore'
 import { AppNav } from './ui/components/AppNav'
 import { Button } from './ui/components/Button'
@@ -13,6 +14,7 @@ import { Today } from './ui/screens/Today'
 import { Workout } from './ui/screens/Workout'
 import { LogSession } from './ui/screens/LogSession'
 import { Settings } from './ui/screens/Settings'
+import { SCREEN_TRANSITION, screenVariants } from './ui/motion'
 
 const Progress = lazy(() =>
   import('./ui/screens/Progress').then(({ Progress: Screen }) => ({
@@ -35,7 +37,7 @@ const FULLSCREEN_VIEWS: View[] = ['onboarding', 'workout', 'log']
 function LoadingScreen() {
   return (
     <div
-      className="mx-auto flex min-h-dvh max-w-md flex-col justify-center gap-4 px-5"
+      className="mx-auto flex min-h-dvh w-full max-w-3xl flex-col justify-center gap-4 px-5 sm:px-8"
       role="status"
       aria-label="Carregando o Eixo"
     >
@@ -50,13 +52,13 @@ function LoadingScreen() {
 function ProgressLoadingScreen() {
   return (
     <div
-      className="mx-auto w-full max-w-md px-5 pt-8 pb-28"
+      className="mx-auto w-full max-w-[70rem] px-4 pt-8 pb-32 sm:px-6 lg:px-8"
       role="status"
       aria-label="Carregando progresso"
     >
       <div className="h-8 w-36 animate-pulse rounded-xl bg-ink-200" />
       <div className="mt-2 h-5 w-56 animate-pulse rounded-lg bg-ink-100" />
-      <div className="mt-7 grid grid-cols-2 gap-3">
+      <div className="mt-7 grid grid-cols-2 gap-3 lg:grid-cols-4">
         {Array.from({ length: 4 }, (_, index) => (
           <div
             key={index}
@@ -76,7 +78,7 @@ function ErrorScreen({ message }: { message: string | null }) {
     void useAppStore.getState().init()
   }
   return (
-    <div className="mx-auto flex min-h-dvh max-w-md flex-col items-center justify-center gap-4 px-6 text-center">
+    <div className="mx-auto flex min-h-dvh max-w-2xl flex-col items-center justify-center gap-4 px-6 text-center">
       <h1 className="text-xl font-bold text-ink-900">Algo deu errado</h1>
       <p className="text-ink-500">
         {message ?? 'Não foi possível carregar seus dados agora.'}
@@ -115,12 +117,24 @@ function App() {
 
   const showNav =
     status === 'ready' && !!baseline && !FULLSCREEN_VIEWS.includes(view)
+  const contentKey =
+    status !== 'ready' ? status : !baseline ? 'onboarding' : view
 
   return (
-    <div className="min-h-dvh bg-ink-50">
-      {content}
-      {showNav && <AppNav />}
-    </div>
+    <MotionConfig reducedMotion="user">
+      <div className="min-h-dvh bg-[#f3f7f5]">
+        <motion.div
+          key={contentKey}
+          variants={screenVariants}
+          initial="initial"
+          animate="enter"
+          transition={SCREEN_TRANSITION}
+        >
+          {content}
+        </motion.div>
+        {showNav && <AppNav />}
+      </div>
+    </MotionConfig>
   )
 }
 

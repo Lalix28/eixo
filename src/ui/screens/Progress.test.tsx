@@ -109,8 +109,8 @@ describe('Progress', () => {
     expect(
       screen.queryByText('Ainda não há métricas por lado suficientes.'),
     ).not.toBeInTheDocument()
-    // melhores tempos por lado mostram — quando não há dados
-    expect(screen.getAllByText('—').length).toBeGreaterThanOrEqual(4)
+    expect(screen.queryByText('Marcas históricas')).not.toBeInTheDocument()
+    expect(screen.queryByText('Distância mão-chão')).not.toBeInTheDocument()
   })
 
   it('mostra streak e total com sessões/logs reais', () => {
@@ -132,9 +132,19 @@ describe('Progress', () => {
       ],
     })
     render(<Progress />)
+    expect(screen.getByText('Marcas históricas')).toBeInTheDocument()
     expect(screen.getByText('40s')).toBeInTheDocument()
     expect(screen.getByText('35s')).toBeInTheDocument()
     expect(screen.getByText('22s')).toBeInTheDocument()
+  })
+
+  it('mostra mão-chão somente quando existe dado histórico', () => {
+    setProgress({
+      logs: [log('2026-01-01', { reachToFloorCm: 8 })],
+    })
+    render(<Progress />)
+    expect(screen.getByText('Distância mão-chão')).toBeInTheDocument()
+    expect(screen.getByText('8 cm')).toBeInTheDocument()
   })
 
   it('renderiza dor lombar quando há logs (sem estado vazio)', () => {
@@ -156,6 +166,15 @@ describe('Progress', () => {
     setProgress({ logs: [log('2026-01-01', { lowBackPainAfter: 5 })] })
     const { rerender } = render(<Progress />)
     expect(screen.queryByText(/Primeiro → atual/)).not.toBeInTheDocument()
+    expect(screen.getByText('5/10')).toBeInTheDocument()
+    expect(
+      screen.getByRole('img', { name: 'Gráfico de dor lombar' }),
+    ).toBeInTheDocument()
+    expect(
+      screen.getByText(
+        'Sem tendência por enquanto.',
+      ),
+    ).toBeInTheDocument()
 
     act(() => {
       setProgress({

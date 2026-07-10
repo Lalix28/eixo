@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from 'vitest'
+import { afterEach, describe, it, expect, beforeEach, vi } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import App from './App'
@@ -21,6 +21,10 @@ const baseline: Baseline = {
 
 // `initialized: true` impede o init() do useEffect de sobrescrever o estado.
 const setState = useAppStore.setState
+
+afterEach(() => {
+  vi.unstubAllGlobals()
+})
 
 describe('App — gate por estado', () => {
   beforeEach(() => {
@@ -81,6 +85,30 @@ describe('App — gate por estado', () => {
     expect(useAppStore.getState().view).toBe('progress')
     expect(
       await screen.findByRole('heading', { name: 'Progresso' }),
+    ).toBeInTheDocument()
+  })
+
+  it('permanece navegável com preferência por movimento reduzido', async () => {
+    vi.stubGlobal(
+      'matchMedia',
+      vi.fn((query: string) => ({
+        matches: query.includes('prefers-reduced-motion'),
+        media: query,
+        onchange: null,
+        addListener: vi.fn(),
+        removeListener: vi.fn(),
+        addEventListener: vi.fn(),
+        removeEventListener: vi.fn(),
+        dispatchEvent: vi.fn(),
+      })),
+    )
+    setState({ status: 'ready', baseline, sessions: [], view: 'today' })
+
+    render(<App />)
+    await userEvent.click(screen.getByRole('button', { name: 'Ajustes' }))
+
+    expect(
+      await screen.findByRole('heading', { name: 'Ajustes' }),
     ).toBeInTheDocument()
   })
 })

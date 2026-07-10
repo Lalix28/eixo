@@ -1,4 +1,5 @@
 import { useState, type ReactNode } from 'react'
+import { motion } from 'framer-motion'
 import { ScreenShell } from '../components/ScreenShell'
 import { Card } from '../components/Card'
 import { Button } from '../components/Button'
@@ -17,6 +18,7 @@ import {
   STOP_SIGNS,
   STOP_SIGNS_INTRO,
 } from '../../data/safety'
+import { QUICK_TRANSITION } from '../motion'
 
 function StatusRow({
   label,
@@ -28,11 +30,17 @@ function StatusRow({
   ok: boolean
 }) {
   return (
-    <div className="flex items-center justify-between py-1.5">
-      <span className="text-ink-700">{label}</span>
-      <span
-        className={`text-sm font-semibold ${ok ? 'text-brand-600' : 'text-ink-400'}`}
-      >
+    <div className="flex min-h-11 items-center justify-between gap-4 py-2">
+      <span className="text-sm text-ink-700 sm:text-base">{label}</span>
+      <span className="inline-flex shrink-0 items-center gap-1.5 text-sm font-semibold text-ink-700">
+        <span
+          className={`flex size-5 items-center justify-center rounded-full text-xs ${
+            ok ? 'bg-brand-50 text-brand-700' : 'bg-ink-100 text-ink-500'
+          }`}
+          aria-hidden="true"
+        >
+          {ok ? '✓' : '–'}
+        </span>
         {value}
       </span>
     </div>
@@ -41,8 +49,8 @@ function StatusRow({
 
 function InfoRow({ children }: { children: ReactNode }) {
   return (
-    <li className="flex gap-2 text-sm text-ink-600">
-      <span className="text-brand-600">•</span>
+    <li className="flex gap-2.5 text-sm leading-relaxed text-ink-600">
+      <span className="text-brand-600" aria-hidden="true">•</span>
       <span>{children}</span>
     </li>
   )
@@ -50,6 +58,8 @@ function InfoRow({ children }: { children: ReactNode }) {
 
 export function Settings() {
   const online = useOnline()
+  const insecureContext =
+    typeof window !== 'undefined' && window.isSecureContext === false
   const exportData = useAppStore((state) => state.exportData)
   const [exporting, setExporting] = useState(false)
   const [exportResult, setExportResult] = useState<
@@ -65,7 +75,7 @@ export function Settings() {
       downloadExportJson(bundle)
       setExportResult({
         kind: 'success',
-        message: 'Backup exportado. Guarde o arquivo em um local seguro.',
+        message: 'Backup exportado e salvo neste dispositivo.',
       })
     } catch {
       setExportResult({
@@ -78,68 +88,69 @@ export function Settings() {
   }
 
   return (
-    <ScreenShell title="Ajustes" subtitle="Informações e segurança">
-      <div className="space-y-5">
-        {/* Sobre / local-first */}
+    <ScreenShell title="Ajustes" subtitle="Dados locais, recursos e segurança">
+      <div className="grid items-start gap-5 lg:grid-cols-2">
+        {/* Dados locais e privacidade */}
         <Card>
-          <h3 className="mb-3 font-semibold text-ink-900">Sobre o Eixo</h3>
-          <ul className="space-y-2">
-            <InfoRow>App local-first: funciona no seu dispositivo.</InfoRow>
-            <InfoRow>
-              Seus dados ficam só neste dispositivo, no armazenamento do navegador.
-            </InfoRow>
-            <InfoRow>
-              Instalável como app; abre offline após o primeiro carregamento.
-            </InfoRow>
-            <InfoRow>Sem conta, sem login e sem sincronização na nuvem.</InfoRow>
-          </ul>
-        </Card>
-
-        {/* Dados */}
-        <Card>
-          <h3 className="mb-3 font-semibold text-ink-900">Seus dados</h3>
-          <p className="text-sm text-ink-600">
+          <p className="text-xs font-semibold text-brand-700">Dados locais</p>
+          <h2 className="mt-1 text-lg font-semibold text-ink-900">
+            Privacidade neste dispositivo
+          </h2>
+          <p className="mt-2 text-sm leading-relaxed text-ink-600">
+            Seus dados ficam só neste dispositivo, no armazenamento do navegador.
+          </p>
+          <p className="mt-3 rounded-[var(--radius-card)] bg-warn-500/10 p-3 text-sm leading-relaxed text-ink-700">
             Limpar os dados do navegador ou usar uma janela privada pode apagar
             seus registros. O backup é manual e deve ser guardado fora do navegador.
           </p>
         </Card>
 
+        {/* Backup */}
         <Card>
-          <h3 className="mb-2 font-semibold text-ink-900">Backup local</h3>
-          <p className="text-sm leading-relaxed text-ink-600">
-            Seus dados ficam neste dispositivo. Você pode exportar um arquivo JSON
-            para guardar uma cópia.
+          <p className="text-xs font-semibold text-brand-700">Backup JSON</p>
+          <h2 className="mt-1 text-lg font-semibold text-ink-900">Backup local</h2>
+          <p className="mt-2 text-sm leading-relaxed text-ink-600">
+            Exporte uma cópia dos dados salvos neste dispositivo para guardar em
+            um local seguro.
           </p>
-          <p className="mt-3 rounded-xl bg-warn-500/10 p-3 text-xs leading-relaxed text-ink-700">
+          <p className="mt-3 rounded-[var(--radius-card)] border border-warn-500/20 bg-[#fffbeb] p-3 text-xs leading-relaxed text-ink-700">
             Este arquivo pode conter dados pessoais de saúde e treino. Guarde em
             local seguro.
           </p>
           <Button
             variant="secondary"
-            className="mt-4 w-full"
+            className="mt-4 w-full sm:w-auto"
             onClick={() => void handleExport()}
             disabled={exporting}
           >
             {exporting ? 'Preparando arquivo…' : 'Exportar JSON'}
           </Button>
           {exportResult && (
-            <p
+            <motion.p
+              key={`${exportResult.kind}-${exportResult.message}`}
+              initial={{ opacity: 0, y: 4 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={QUICK_TRANSITION}
               role={exportResult.kind === 'error' ? 'alert' : 'status'}
-              className={`mt-3 text-sm ${
+              aria-live="polite"
+              className={`mt-3 text-sm font-medium ${
                 exportResult.kind === 'error'
-                  ? 'text-danger-500'
+                  ? 'text-danger-700'
                   : 'text-brand-700'
               }`}
             >
               {exportResult.message}
-            </p>
+            </motion.p>
           )}
         </Card>
 
-        {/* Status do dispositivo */}
+        {/* PWA e recursos do dispositivo */}
         <Card>
-          <h3 className="mb-2 font-semibold text-ink-900">Status do dispositivo</h3>
-          <div className="divide-y divide-ink-100">
+          <p className="text-xs font-semibold text-brand-700">PWA e dispositivo</p>
+          <h2 className="mt-1 text-lg font-semibold text-ink-900">
+            Status do dispositivo
+          </h2>
+          <div className="mt-3 divide-y divide-ink-100">
             <StatusRow
               label="Conexão"
               value={online ? 'Online' : 'Offline'}
@@ -161,32 +172,70 @@ export function Settings() {
               ok={supportsVibrate()}
             />
           </div>
-          <p className="mt-2 text-xs text-ink-400">
-            {online ? 'Você está online.' : 'Você está offline — o app continua funcionando.'}
+          <p className="mt-3 text-[0.8125rem] leading-relaxed text-ink-600">
+            {online
+              ? 'Você está online.'
+              : 'Você está offline — o app continua funcionando.'}
           </p>
+          {insecureContext && (
+            <p className="mt-1 text-[0.8125rem] leading-relaxed text-ink-600">
+              Alguns recursos ficam disponíveis quando o app é aberto em uma
+              conexão segura.
+            </p>
+          )}
+        </Card>
+
+        {/* Informações do app */}
+        <Card>
+          <p className="text-xs font-semibold text-brand-700">Informações do app</p>
+          <h2 className="mt-1 text-lg font-semibold text-ink-900">Sobre o Eixo</h2>
+          <ul className="mt-3 space-y-2">
+            <InfoRow>App local-first: funciona no seu dispositivo.</InfoRow>
+            <InfoRow>
+              Instalável como app; abre offline após o primeiro carregamento.
+            </InfoRow>
+            <InfoRow>Sem conta, sem login e sem sincronização na nuvem.</InfoRow>
+          </ul>
         </Card>
 
         {/* Segurança */}
-        <Card>
-          <h3 className="mb-3 font-semibold text-ink-900">Segurança</h3>
-          <p className="text-sm font-medium text-ink-800">{SAFETY_DISCLAIMER}</p>
+        <Card className="lg:col-span-2">
+          <p className="text-xs font-semibold text-brand-700">Segurança</p>
+          <h2 className="mt-1 text-lg font-semibold text-ink-900">
+            Referências para o treino
+          </h2>
+          <p className="mt-3 text-sm font-medium text-ink-800">
+            {SAFETY_DISCLAIMER}
+          </p>
           <p className="mt-2 text-sm text-ink-600">{PAIN_REFERENCE}</p>
           <ul className="mt-3 space-y-2">
             {SAFETY_RULES.map((rule) => (
               <InfoRow key={rule}>{rule}</InfoRow>
             ))}
           </ul>
-          <p className="mt-4 text-sm font-medium text-ink-800">{STOP_SIGNS_INTRO}</p>
-          <ul className="mt-2 flex flex-wrap gap-2">
-            {STOP_SIGNS.map((sign) => (
-              <li
-                key={sign}
-                className="rounded-full bg-danger-500/10 px-3 py-1 text-xs font-medium text-danger-500"
+          <aside className="mt-5 rounded-[var(--radius-card)] border border-danger-500/25 border-l-4 border-l-danger-500 bg-danger-500/5 p-4">
+            <div className="flex items-start gap-3">
+              <span
+                className="flex size-6 shrink-0 items-center justify-center rounded-full bg-white text-sm font-bold text-danger-700 ring-1 ring-danger-500/20"
+                aria-hidden="true"
               >
-                {sign}
-              </li>
-            ))}
-          </ul>
+                !
+              </span>
+              <div>
+                <h3 className="font-semibold text-danger-700">
+                  Sinais de parada
+                </h3>
+                <p className="mt-1 text-sm font-medium text-ink-800">
+                  {STOP_SIGNS_INTRO}
+                </p>
+                <ul className="mt-2 list-disc space-y-1 pl-5 text-sm leading-relaxed text-ink-700">
+                  {STOP_SIGNS.map((sign) => (
+                    <li key={sign}>{sign}</li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </aside>
         </Card>
       </div>
     </ScreenShell>

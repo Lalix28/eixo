@@ -48,9 +48,9 @@ export type NavView = (typeof NAV_VIEWS)[number]
 
 export type AppStatus = 'loading' | 'ready' | 'error'
 
-const IDB_ERROR_MESSAGE =
-  'Não foi possível acessar o armazenamento local deste navegador. ' +
-  'Verifique se não está em uma janela privada e tente novamente.'
+const LOCAL_DATA_ERROR_MESSAGE =
+  'Não foi possível salvar ou acessar os dados locais neste dispositivo. ' +
+  'Tente novamente e verifique as configurações de armazenamento do navegador.'
 
 interface AppState {
   view: View
@@ -129,7 +129,7 @@ export function createAppStore(repo: Repository) {
           view: baseline ? 'today' : 'onboarding',
         })
       } catch {
-        set({ status: 'error', error: IDB_ERROR_MESSAGE, initialized: true })
+        set({ status: 'error', error: LOCAL_DATA_ERROR_MESSAGE, initialized: true })
       }
     },
 
@@ -139,7 +139,7 @@ export function createAppStore(repo: Repository) {
         const baseline = await repo.saveBaseline(input)
         set({ baseline, status: 'ready', error: null, view: 'today' })
       } catch {
-        set({ status: 'error', error: IDB_ERROR_MESSAGE })
+        set({ status: 'error', error: LOCAL_DATA_ERROR_MESSAGE })
       }
     },
 
@@ -172,7 +172,11 @@ export function createAppStore(repo: Repository) {
           view: 'workout',
         }))
       } catch {
-        set({ starting: false, status: 'error', error: IDB_ERROR_MESSAGE })
+        set({
+          starting: false,
+          status: 'error',
+          error: LOCAL_DATA_ERROR_MESSAGE,
+        })
       }
     },
 
@@ -218,7 +222,7 @@ export function createAppStore(repo: Repository) {
           view: 'today',
         }))
       } catch {
-        set({ saving: false, status: 'error', error: IDB_ERROR_MESSAGE })
+        set({ saving: false, status: 'error', error: LOCAL_DATA_ERROR_MESSAGE })
       }
     },
 
@@ -228,7 +232,10 @@ export function createAppStore(repo: Repository) {
         const data = await repo.getProgressData()
         set({ progressData: data, progressLoading: false })
       } catch {
-        set({ progressLoading: false, progressError: IDB_ERROR_MESSAGE })
+        set({
+          progressLoading: false,
+          progressError: LOCAL_DATA_ERROR_MESSAGE,
+        })
       }
     },
 

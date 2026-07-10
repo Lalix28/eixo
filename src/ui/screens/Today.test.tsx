@@ -25,6 +25,7 @@ describe('Today (dashboard)', () => {
       status: 'ready',
       baseline,
       sessions: [],
+      activeSessionId: null,
       view: 'today',
     })
   })
@@ -67,6 +68,63 @@ describe('Today (dashboard)', () => {
     })
     render(<Today />)
     expect(screen.getByText('Treino registrado')).toBeInTheDocument()
+    expect(
+      screen.queryByRole('button', { name: 'Começar treino' }),
+    ).not.toBeInTheDocument()
+    expect(screen.getByText('Treino de hoje concluído.')).toBeInTheDocument()
+  })
+
+  it('não oferece novo treino quando o registro foi parcial', () => {
+    const today = new Date()
+    const key = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`
+    useAppStore.setState({
+      sessions: [
+        {
+          id: 's-partial',
+          planDayId: 'day-01',
+          dayIndex: 1,
+          dayKey: key,
+          startedAt: 0,
+          completedAt: 1,
+          status: 'partial',
+          createdAt: '2026-07-06T00:00:00.000Z',
+        },
+      ],
+    })
+    render(<Today />)
+    expect(screen.getByText('Treino parcial')).toBeInTheDocument()
+    expect(screen.getByText('Registro parcial salvo.')).toBeInTheDocument()
+    expect(
+      screen.queryByRole('button', { name: 'Começar treino' }),
+    ).not.toBeInTheDocument()
+  })
+
+  it('nomeia corretamente uma sessão não concluída', () => {
+    const today = new Date()
+    const key = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`
+    useAppStore.setState({
+      activeSessionId: 's-open',
+      sessions: [
+        {
+          id: 's-open',
+          planDayId: 'day-01',
+          dayIndex: 1,
+          dayKey: key,
+          startedAt: 0,
+          completedAt: null,
+          status: 'not_completed',
+          createdAt: '2026-07-06T00:00:00.000Z',
+        },
+      ],
+    })
+    const { rerender } = render(<Today />)
+    expect(screen.getByRole('button', { name: 'Retomar treino' })).toBeInTheDocument()
+
+    useAppStore.setState({ activeSessionId: null })
+    rerender(<Today />)
+    expect(
+      screen.getByRole('button', { name: 'Recomeçar treino' }),
+    ).toBeInTheDocument()
   })
 
   it('resume o baseline real', () => {

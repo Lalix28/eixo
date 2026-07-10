@@ -25,9 +25,9 @@ export function NumberField({
           value={value}
           placeholder={placeholder}
           onChange={(e) => onChange(e.target.value)}
-          className="min-h-11 min-w-0 w-full rounded-xl border border-ink-200 bg-white px-3 py-2.5 text-ink-900 outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20"
+          className="min-h-12 min-w-0 w-full rounded-lg border border-ink-300 bg-white px-3 py-2.5 text-ink-900 outline-none placeholder:text-ink-400 focus:border-brand-600 focus:ring-2 focus:ring-brand-500/20"
         />
-        {suffix && <span className="text-sm text-ink-500">{suffix}</span>}
+        {suffix && <span className="shrink-0 text-sm text-ink-600">{suffix}</span>}
       </div>
     </label>
   )

@@ -1,4 +1,6 @@
 import { NAV_VIEWS, useAppStore, type NavView } from '../../store/useAppStore'
+import { motion } from 'framer-motion'
+import { TAP_SCALE } from '../motion'
 
 const LABELS: Record<NavView, string> = {
   today: 'Hoje',
@@ -22,23 +24,39 @@ export function AppNav() {
 
   return (
     <nav
-      className="fixed inset-x-0 bottom-0 z-20 border-t border-ink-100 bg-white shadow-[0_-8px_24px_rgba(15,23,42,0.04)]"
+      className="fixed inset-x-0 bottom-0 z-20 border-t border-ink-200 bg-white shadow-[0_-8px_24px_rgba(15,23,42,0.05)] sm:inset-x-4 sm:bottom-4 sm:mx-auto sm:max-w-2xl sm:rounded-lg sm:border"
       aria-label="Navegação principal"
     >
-      <ul className="mx-auto flex max-w-md items-stretch justify-around px-2 pb-[env(safe-area-inset-bottom)]">
+      <ul className="mx-auto flex items-stretch justify-around px-2 pb-[env(safe-area-inset-bottom)] sm:pb-0">
         {NAV_VIEWS.map((v) => {
           const active = view === v
           return (
             <li key={v} className="flex-1">
-              <button
+              <motion.button
                 type="button"
                 aria-current={active ? 'page' : undefined}
                 onClick={() => setView(v)}
-                className={`flex min-h-16 w-full flex-col items-center justify-center gap-1 rounded-xl text-xs font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-brand-600 ${
-                  active ? 'text-brand-600' : 'text-ink-400 hover:text-ink-600'
+                whileTap={{ scale: TAP_SCALE }}
+                className={`relative flex min-h-16 w-full flex-col items-center justify-center gap-1 rounded-md text-xs font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-[-3px] focus-visible:outline-brand-600 ${
+                  active
+                    ? 'text-brand-700'
+                    : 'text-ink-500 hover:bg-ink-50 hover:text-ink-700'
                 }`}
               >
-                <svg
+                {active && (
+                  <motion.span
+                    layoutId="active-nav-item"
+                    className="absolute inset-1 rounded-md bg-brand-50"
+                    transition={{
+                      type: 'spring',
+                      stiffness: 420,
+                      damping: 36,
+                      mass: 0.6,
+                    }}
+                    aria-hidden="true"
+                  />
+                )}
+                <motion.svg
                   width="22"
                   height="22"
                   viewBox="0 0 24 24"
@@ -48,11 +66,14 @@ export function AppNav() {
                   strokeLinecap="round"
                   strokeLinejoin="round"
                   aria-hidden="true"
+                  animate={{ scale: active ? 1.04 : 1 }}
+                  transition={{ duration: 0.16 }}
+                  className="relative z-10"
                 >
                   <path d={ICONS[v]} />
-                </svg>
-                {LABELS[v]}
-              </button>
+                </motion.svg>
+                <span className="relative z-10">{LABELS[v]}</span>
+              </motion.button>
             </li>
           )
         })}

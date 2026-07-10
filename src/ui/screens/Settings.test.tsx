@@ -24,6 +24,7 @@ describe('Settings (Ajustes/Info)', () => {
 
   afterEach(() => {
     useAppStore.setState({ exportData: defaultExportData })
+    vi.unstubAllGlobals()
   })
 
   it('mostra informações local-first e PWA/offline', () => {
@@ -84,6 +85,16 @@ describe('Settings (Ajustes/Info)', () => {
     expect(screen.getByText('Vibração')).toBeInTheDocument()
   })
 
+  it('explica limitações quando a conexão não é segura', () => {
+    vi.stubGlobal('isSecureContext', false)
+    render(<Settings />)
+    expect(
+      screen.getByText(
+        'Alguns recursos ficam disponíveis quando o app é aberto em uma conexão segura.',
+      ),
+    ).toBeInTheDocument()
+  })
+
   it('mostra a seção de segurança', () => {
     render(<Settings />)
     expect(
@@ -92,5 +103,8 @@ describe('Settings (Ajustes/Info)', () => {
       ),
     ).toBeInTheDocument()
     expect(screen.getByText('Dor aguda')).toBeInTheDocument()
+    expect(
+      screen.getByRole('heading', { name: 'Sinais de parada' }),
+    ).toBeInTheDocument()
   })
 })

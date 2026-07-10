@@ -1,9 +1,10 @@
 import 'fake-indexeddb/auto'
-import { describe, it, expect, beforeEach, afterEach } from 'vitest'
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import { EixoDB } from './db'
 import { DexieRepository } from './dexieRepository'
 import type { BaselineInput } from '../domain/types'
 import type { SideMetricInput } from './repository'
+import { createId } from '../lib/createId'
 
 const baselineInput: BaselineInput = {
   level: 'beginner',
@@ -22,13 +23,14 @@ let db: EixoDB
 let repo: DexieRepository
 
 beforeEach(() => {
-  dbName = `eixo-test-${crypto.randomUUID()}`
+  dbName = `eixo-test-${createId()}`
   db = new EixoDB(dbName)
   repo = new DexieRepository(db)
 })
 
 afterEach(async () => {
   await db.delete()
+  vi.unstubAllGlobals()
 })
 
 describe('DexieRepository — baseline', () => {
@@ -39,6 +41,22 @@ describe('DexieRepository — baseline', () => {
 
     const loaded = await repo.getBaseline()
     expect(loaded).toEqual(saved)
+  })
+
+  it('continua salvando baseline sem randomUUID', async () => {
+    vi.stubGlobal('crypto', {
+      getRandomValues: (bytes: Uint8Array) => {
+        bytes.fill(7)
+        return bytes
+      },
+    })
+
+    const saved = await repo.saveBaseline(baselineInput)
+
+    expect(saved.id).toMatch(
+      /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i,
+    )
+    expect(await repo.getBaseline()).toEqual(saved)
   })
 
   it('getBaseline retorna o mais recente', async () => {
@@ -178,6 +196,8 @@ describe('DexieRepository — consultas e reset', () => {
       sessionId: session.id,
       dayKey: session.dayKey,
       lowBackPainAfter: 2,
+      frontPlankSec: 40,
+      reachToFloorCm: 8,
     })
     await repo.saveSideMetrics(log.id, session.dayKey, [
       { metric: 'side_plank_sec', side: 'left', phase: 'single', value: 25 },
@@ -193,6 +213,8 @@ describe('DexieRepository — consultas e reset', () => {
     expect(bundle.data.baselines).toEqual([baseline])
     expect(bundle.data.sessions).toEqual([session])
     expect(bundle.data.logs).toEqual([log])
+    expect(bundle.data.logs[0].frontPlankSec).toBe(40)
+    expect(bundle.data.logs[0].reachToFloorCm).toBe(8)
     expect(bundle.data.sideMetrics).toHaveLength(1)
   })
 
