@@ -1,0 +1,8 @@
+[{
+      "relation": ["delegate_permission/common.handle_all_urls"],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "com.lalix28.eixo",
+        "sha256_cert_fingerprints": ["79:4C:A5:61:36:6A:F4:5C:AB:04:E7:30:6C:48:73:DE:85:73:71:AA:B5:07:FD:BB:C1:A0:66:45:C9:20:23:91"]
+      }
+    }]
