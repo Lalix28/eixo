@@ -11,14 +11,19 @@ const pwa = VitePWA({
   registerType: 'prompt', // atualização segura: pergunta antes de recarregar
   includeAssets: ['favicon.svg', 'icons/icon-192.png'],
   manifest: {
+    id: '/',
     name: 'Eixo',
     short_name: 'Eixo',
-    description: 'Mini app pessoal de treino/mobilidade',
+    description:
+      'Plano pessoal de mobilidade, exercícios e acompanhamento local de treinos.',
     lang: 'pt-BR',
+    dir: 'ltr',
     start_url: '/',
     scope: '/',
     display: 'standalone',
     orientation: 'portrait',
+    categories: ['health', 'fitness', 'lifestyle'],
+    prefer_related_applications: false,
     theme_color: '#059669',
     background_color: '#f8fafc',
     icons: [
