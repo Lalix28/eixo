@@ -105,6 +105,23 @@ export function Settings() {
           </p>
         </Card>
 
+        {/* Política pública */}
+        <Card>
+          <p className="text-xs font-semibold text-brand-700">Privacidade</p>
+          <h2 className="mt-1 text-lg font-semibold text-ink-900">
+            Política de Privacidade
+          </h2>
+          <p className="mt-2 text-sm leading-relaxed text-ink-600">
+            Saiba como seus dados locais são tratados.
+          </p>
+          <a
+            href="/privacy/"
+            className="mt-4 inline-flex min-h-11 items-center rounded-xl border border-brand-200 bg-brand-50 px-4 py-2 text-sm font-semibold text-brand-700 transition-colors hover:border-brand-300 hover:bg-brand-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600"
+          >
+            Ler política de privacidade
+          </a>
+        </Card>
+
         {/* Backup */}
         <Card>
           <p className="text-xs font-semibold text-brand-700">Backup JSON</p>

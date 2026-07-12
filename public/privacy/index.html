@@ -1,0 +1,402 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="index,follow">
+    <meta
+      name="description"
+      content="Política de Privacidade do Eixo: entenda como os dados de treinos, progresso e desconfortos são tratados localmente no seu dispositivo."
+    >
+    <meta name="theme-color" content="#f6faf7">
+    <title>Política de Privacidade — Eixo</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --background: #f6faf7;
+        --surface: #ffffff;
+        --surface-soft: #eaf6ef;
+        --text: #17231c;
+        --muted: #4d6055;
+        --brand: #087443;
+        --brand-strong: #065c36;
+        --border: #cfe3d6;
+        --shadow: 0 18px 50px rgb(20 73 45 / 10%);
+      }
+
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+
+      html {
+        background: var(--background);
+      }
+
+      body {
+        margin: 0;
+        color: var(--text);
+        background:
+          radial-gradient(circle at top right, #dff3e7 0, transparent 28rem),
+          var(--background);
+        font-family:
+          system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        font-size: 1rem;
+        line-height: 1.65;
+      }
+
+      a {
+        color: var(--brand-strong);
+        font-weight: 650;
+        text-decoration-thickness: 0.1em;
+        text-underline-offset: 0.18em;
+      }
+
+      a:hover {
+        color: var(--brand);
+      }
+
+      a:focus-visible {
+        border-radius: 0.2rem;
+        outline: 3px solid #f5a524;
+        outline-offset: 4px;
+      }
+
+      .page {
+        width: min(100% - 2rem, 52rem);
+        margin-inline: auto;
+        padding-block: clamp(1.5rem, 5vw, 4rem);
+      }
+
+      header {
+        padding: clamp(1.5rem, 5vw, 3rem);
+        border: 1px solid var(--border);
+        border-radius: 1.5rem;
+        background: var(--surface);
+        box-shadow: var(--shadow);
+      }
+
+      .eyebrow {
+        margin: 0 0 0.5rem;
+        color: var(--brand);
+        font-size: 0.8rem;
+        font-weight: 750;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      h1,
+      h2 {
+        line-height: 1.2;
+      }
+
+      h1 {
+        margin: 0;
+        font-size: clamp(2rem, 7vw, 3.25rem);
+        letter-spacing: -0.035em;
+      }
+
+      h2 {
+        margin: 0 0 0.8rem;
+        font-size: clamp(1.3rem, 4vw, 1.65rem);
+        letter-spacing: -0.015em;
+      }
+
+      p,
+      ul {
+        margin-block: 0.75rem;
+      }
+
+      ul {
+        padding-left: 1.35rem;
+      }
+
+      li + li {
+        margin-top: 0.4rem;
+      }
+
+      .summary {
+        max-width: 43rem;
+        color: var(--muted);
+        font-size: 1.05rem;
+      }
+
+      .updated {
+        display: inline-flex;
+        margin-top: 0.75rem;
+        padding: 0.35rem 0.7rem;
+        border-radius: 999px;
+        color: var(--brand-strong);
+        background: var(--surface-soft);
+        font-size: 0.88rem;
+        font-weight: 650;
+      }
+
+      main {
+        margin-top: 1rem;
+        overflow: hidden;
+        border: 1px solid var(--border);
+        border-radius: 1.5rem;
+        background: var(--surface);
+        box-shadow: var(--shadow);
+      }
+
+      section {
+        padding: clamp(1.35rem, 4vw, 2.25rem);
+      }
+
+      section + section {
+        border-top: 1px solid var(--border);
+      }
+
+      .note {
+        margin-top: 1rem;
+        padding: 1rem;
+        border-left: 4px solid var(--brand);
+        border-radius: 0.3rem 0.8rem 0.8rem 0.3rem;
+        background: var(--surface-soft);
+      }
+
+      footer {
+        padding: 1.5rem 0.25rem 0;
+        color: var(--muted);
+        font-size: 0.9rem;
+        text-align: center;
+      }
+
+      @media (max-width: 32rem) {
+        .page {
+          width: min(100% - 1rem, 52rem);
+          padding-block: 0.5rem 1.5rem;
+        }
+
+        header,
+        main {
+          border-radius: 1rem;
+        }
+      }
+
+      @media (prefers-contrast: more) {
+        :root {
+          --text: #07130b;
+          --muted: #263d2e;
+          --brand: #004f29;
+          --brand-strong: #003b1e;
+          --border: #557763;
+        }
+
+        a:focus-visible {
+          outline-width: 4px;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+          scroll-behavior: auto !important;
+          transition-duration: 0.01ms !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <header>
+        <p class="eyebrow">Eixo</p>
+        <h1>Política de Privacidade</h1>
+        <p class="summary">
+          Esta política explica, em linguagem direta, quais dados o Eixo trata,
+          onde eles ficam e quais escolhas permanecem sob seu controle.
+        </p>
+        <p class="updated">Última atualização: 12/07/2026</p>
+      </header>
+
+      <main>
+        <section aria-labelledby="identificacao">
+          <h2 id="identificacao">1. Identificação e contato</h2>
+          <p>
+            Esta é a Política de Privacidade do aplicativo <strong>Eixo</strong>.
+            Para dúvidas sobre privacidade ou suporte, escreva para
+            <a href="mailto:contato.eixoapp@gmail.com">contato.eixoapp@gmail.com</a>.
+          </p>
+        </section>
+
+        <section aria-labelledby="finalidade">
+          <h2 id="finalidade">2. Para que o Eixo serve</h2>
+          <p>
+            O Eixo auxilia no acompanhamento pessoal de mobilidade, exercícios,
+            sessões de treino, esforço percebido, desconfortos e dores informados
+            pelo usuário, observações e progresso.
+          </p>
+          <p>
+            O aplicativo não promete cura, tratamento, diagnóstico, prevenção
+            garantida ou resultado clínico e não substitui um profissional de saúde.
+          </p>
+        </section>
+
+        <section aria-labelledby="dados">
+          <h2 id="dados">3. Dados tratados localmente</h2>
+          <p>Conforme o uso dos recursos disponíveis, o Eixo pode armazenar:</p>
+          <ul>
+            <li>
+              respostas do onboarding e do ponto de partida, como nível informado,
+              objetivo, disponibilidade de bicicleta e tempo diário;
+            </li>
+            <li>
+              limitações e desconfortos informados, incluindo dor lombar, dor no
+              adutor, lado com atrofia e lado de maior limitação;
+            </li>
+            <li>
+              sessões de treino, dia do plano, horários e status de conclusão;
+            </li>
+            <li>
+              dor antes e depois, lado associado ao desconforto, esforço percebido
+              (RPE) e exercício que causou incômodo;
+            </li>
+            <li>observações livres digitadas pelo usuário;</li>
+            <li>
+              métricas históricas ainda suportadas, como tempo de prancha frontal,
+              distância das mãos ao chão, dor no adutor antes e depois, tempo de
+              prancha lateral e sustentação de quadril/core por lado;
+            </li>
+            <li>dados derivados de progresso e consistência.</li>
+          </ul>
+          <p>
+            Esses registros não são apresentados pelo Eixo como prontuário médico.
+            Como as observações são livres, elas podem conter informações pessoais
+            inseridas pelo próprio usuário.
+          </p>
+        </section>
+
+        <section aria-labelledby="armazenamento">
+          <h2 id="armazenamento">4. Onde os dados ficam</h2>
+          <p>
+            Os registros são armazenados localmente no dispositivo, no IndexedDB,
+            por meio do Dexie. Na versão atualmente auditada, não existe conta,
+            login, banco de dados remoto ou sincronização entre dispositivos.
+          </p>
+          <p>
+            O armazenamento é vinculado à origem web. Por isso, dados salvos em uma
+            origem ou domínio não aparecem automaticamente em outra origem. A
+            disponibilidade e a permanência desse armazenamento também dependem do
+            navegador, do sistema operacional e das configurações do dispositivo.
+          </p>
+        </section>
+
+        <section aria-labelledby="transmissao">
+          <h2 id="transmissao">5. Coleta, transmissão e compartilhamento</h2>
+          <p>
+            Na versão atualmente auditada, não foram identificadas rotinas que
+            enviem os registros pessoais, informações de dor, treinos ou observações
+            do usuário para servidores do responsável pelo Eixo ou para terceiros.
+          </p>
+          <p>
+            Também não foram identificados analytics, trackers ou cookies. O Eixo
+            não exibe publicidade, não comercializa dados e não compartilha
+            automaticamente registros pessoais.
+          </p>
+          <div class="note">
+            <p>
+              A PWA utiliza tráfego técnico para carregar arquivos estáticos,
+              verificar atualizações e baixar novas versões do service worker e dos
+              recursos do aplicativo. Na versão auditada, esse tráfego técnico não
+              corresponde ao envio dos registros pessoais armazenados no IndexedDB.
+            </p>
+          </div>
+        </section>
+
+        <section aria-labelledby="exportacao">
+          <h2 id="exportacao">6. Exportação em JSON</h2>
+          <p>
+            A exportação acontece somente após uma ação explícita do usuário. O
+            navegador ou o sistema cria um arquivo JSON com uma cópia dos dados
+            locais. O Eixo não envia automaticamente esse arquivo para e-mail, nuvem
+            ou terceiros.
+          </p>
+          <p>
+            Depois da exportação, a guarda do arquivo e qualquer compartilhamento
+            ficam sob controle do usuário. O arquivo pode conter informações pessoais
+            e deve ser protegido com cuidado.
+          </p>
+        </section>
+
+        <section aria-labelledby="retencao">
+          <h2 id="retencao">7. Retenção e exclusão</h2>
+          <p>
+            Os registros permanecem no armazenamento local enquanto os dados do site
+            ou aplicativo forem mantidos pelo dispositivo. Limpar os dados da origem
+            <strong>eixo-steel.vercel.app</strong> remove esse armazenamento local;
+            limpar dados do navegador também pode remover os registros.
+          </p>
+          <p>
+            Redefinir ou trocar o aparelho pode causar perda dos registros. A
+            desinstalação pode não apagar os dados da origem web em todos os
+            navegadores e modalidades de instalação. Como não há servidor de dados
+            pessoais ou sincronização, não há uma cópia remota que o Eixo possa
+            excluir ou recuperar.
+          </p>
+          <p>
+            Se quiser manter uma cópia, exporte o JSON antes de limpar dados, redefinir
+            o dispositivo ou trocar de aparelho.
+          </p>
+        </section>
+
+        <section aria-labelledby="seguranca">
+          <h2 id="seguranca">8. Segurança</h2>
+          <p>
+            O aplicativo é servido por HTTPS. Cabe ao usuário proteger o acesso ao
+            próprio dispositivo e aos arquivos exportados. Dados locais podem ser
+            perdidos quando o armazenamento é apagado, e nenhuma medida técnica
+            oferece garantia absoluta de segurança.
+          </p>
+          <p>
+            Observações pessoais sensíveis e arquivos exportados não devem ser
+            compartilhados sem cuidado.
+          </p>
+        </section>
+
+        <section aria-labelledby="saude">
+          <h2 id="saude">9. Saúde e segurança</h2>
+          <p>
+            O Eixo não realiza diagnóstico e não substitui avaliação médica,
+            fisioterapêutica ou de outro profissional habilitado.
+          </p>
+          <p>
+            Dor forte, piora persistente, perda de força, dormência ou outros sinais
+            de alerta justificam interromper o exercício e procurar orientação
+            profissional.
+          </p>
+        </section>
+
+        <section aria-labelledby="criancas">
+          <h2 id="criancas">10. Crianças</h2>
+          <p>O Eixo não foi projetado especificamente para crianças.</p>
+        </section>
+
+        <section aria-labelledby="alteracoes">
+          <h2 id="alteracoes">11. Alterações nesta política</h2>
+          <p>
+            Esta política pode ser atualizada quando o funcionamento ou as práticas
+            do Eixo mudarem. A data no início da página será atualizada, e alterações
+            relevantes deverão permanecer coerentes com o aplicativo e com a ficha
+            da Play Store.
+          </p>
+        </section>
+
+        <section aria-labelledby="contato">
+          <h2 id="contato">12. Contato</h2>
+          <p>
+            Para questões de privacidade ou suporte:
+            <a href="mailto:contato.eixoapp@gmail.com">contato.eixoapp@gmail.com</a>.
+          </p>
+        </section>
+      </main>
+
+      <footer>
+        <p>Eixo — acompanhamento pessoal com dados armazenados localmente.</p>
+      </footer>
+    </div>
+  </body>
+</html>

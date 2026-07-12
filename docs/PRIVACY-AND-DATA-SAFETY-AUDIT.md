@@ -4,7 +4,9 @@
 
 Esta auditoria técnica descreve o comportamento observado no código da versão 1.0 em preparação. Foram pesquisadas APIs e bibliotecas de rede, analytics, rastreamento, compartilhamento, permissões e armazenamento; também foram inspecionados o modelo de dados, o repositório Dexie/IndexedDB, o fluxo de exportação e as dependências usadas pela aplicação.
 
-Este documento não é a política de privacidade pública final e não substitui a revisão das declarações no Play Console.
+Este documento não substitui a política de privacidade pública nem a revisão das declarações no Play Console.
+
+A política pública foi implementada como HTML estático em `/privacy/`, com acesso pela tela **Ajustes**. A URL de produção esperada é `https://eixo-steel.vercel.app/privacy/`, mas ainda precisa ser confirmada após o deployment.
 
 ## Dados preenchidos e gerados
 
@@ -78,15 +80,20 @@ O carregamento inicial da PWA, a verificação/atualização do service worker e
 
 As bibliotecas de produção identificadas servem a persistência local, interface, gráficos e estado. Nenhuma delas foi encontrada configurada para transmitir dados. O pacote transitivo `workbox-google-analytics`, presente no lockfile como parte do conjunto de ferramentas Workbox, não é importado nem configurado pela aplicação ou pelo service worker gerado.
 
-## Como apagar os dados locais
+## Retenção e como apagar os dados locais
 
-A interface atual informa o caráter local dos dados, mas não expõe um botão de exclusão. O usuário pode apagar os dados do Eixo pelas configurações de armazenamento/dados do site ou do aplicativo no navegador ou no Android. A desinstalação também normalmente remove os dados locais associados ao aplicativo, conforme o comportamento da plataforma.
+A interface atual informa o caráter local dos dados, mas não expõe um botão de exclusão. O usuário pode apagar os dados do Eixo pelas configurações de armazenamento/dados do site ou do aplicativo no navegador ou no Android. Limpar os dados da origem `eixo-steel.vercel.app` remove o armazenamento local dessa origem; limpar dados do navegador também pode remover os registros.
 
-Limpar os dados do site/aplicativo, usar ambientes privados ou desinstalar pode apagar permanentemente o histórico local. Como não há backend ou sincronização, o Eixo não consegue recuperar esses registros. Uma exportação JSON feita previamente é apenas um arquivo de backup; a versão auditada não possui fluxo de importação ou restauração.
+Redefinir ou trocar o aparelho pode causar perda dos registros. A desinstalação pode não apagar os dados da origem web em todos os navegadores e modalidades de instalação. Como não há backend ou sincronização, o Eixo não consegue recuperar esses registros. O usuário deve exportar o JSON antes de limpar os dados quando desejar manter uma cópia; a versão auditada não possui fluxo de importação ou restauração.
 
-## Pendência de contato
+## Política pública e contato
 
-**E-mail público de suporte ainda não definido pelo responsável.**
+- Política implementada em: `/privacy/`.
+- URL de produção esperada: `https://eixo-steel.vercel.app/privacy/`.
+- Acesso dentro do aplicativo: implementado na tela **Ajustes**.
+- Contato público autorizado para privacidade e suporte: `contato.eixoapp@gmail.com`.
+- Confirmação da URL após o deployment: **pendente**.
+- Envio da ficha da Play Store e do formulário Data Safety: **pendente**.
 
 Nenhum e-mail obtido de Git, metadados de pacote, conta do sistema ou arquivos locais foi usado neste documento.
 

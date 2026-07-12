@@ -48,6 +48,18 @@ describe('Settings (Ajustes/Info)', () => {
     expect(screen.getByText(/dados pessoais de saúde e treino/)).toBeInTheDocument()
   })
 
+  it('oferece acesso direto à política pública de privacidade', () => {
+    render(<Settings />)
+
+    expect(screen.getByText('Política de Privacidade')).toBeInTheDocument()
+    expect(
+      screen.getByText('Saiba como seus dados locais são tratados.'),
+    ).toBeInTheDocument()
+    expect(
+      screen.getByRole('link', { name: 'Ler política de privacidade' }),
+    ).toHaveAttribute('href', '/privacy/')
+  })
+
   it('solicita dados à store, dispara o download e confirma sucesso', async () => {
     const exportData = vi.fn().mockResolvedValue(emptyBundle)
     useAppStore.setState({ exportData })

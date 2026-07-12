@@ -2,6 +2,14 @@
 
 Este documento separa os ativos por destino. Nenhuma captura ou imagem de loja foi criada nesta rodada. As dimensões e demais requisitos da Google Play devem ser confirmados na documentação oficial vigente no momento da publicação.
 
+## Política de privacidade e contato da ficha
+
+- A política pública foi implementada em `/privacy/`, com acesso pela tela **Ajustes**.
+- URL de produção esperada: `https://eixo-steel.vercel.app/privacy/`.
+- A URL ainda deve ser confirmada após o deployment antes de ser informada na ficha da loja.
+- Contato público autorizado para privacidade e suporte: `contato.eixoapp@gmail.com`.
+- A ficha da Play Store e o formulário Data Safety ainda não foram enviados.
+
 ## 1. Screenshots opcionais do Web App Manifest
 
 - Status: **pendentes de captura real**.

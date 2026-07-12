@@ -33,12 +33,13 @@ Se o APK de teste estiver instalado e a versão da Play for assinada com um cert
 
 ## Pendências antes da publicação
 
-- Política pública de privacidade: **pendente**.
-- Ficha da loja: **pendente**.
-- Declaração de Data Safety: **pendente**.
+- Política pública de privacidade: **implementada** em `/privacy/`, com acesso pela tela **Ajustes**.
+- URL de produção esperada: `https://eixo-steel.vercel.app/privacy/`; confirmação após o deployment: **pendente**.
+- Contato público autorizado para privacidade e suporte: `contato.eixoapp@gmail.com`.
+- Ficha da Play Store: **ainda não enviada**.
+- Formulário Data Safety: **ainda não enviado**.
 - Declaração de saúde: **pendente**.
 - Configuração e revisão no Play Console: **pendente**.
-- E-mail público de suporte: **pendente de definição pelo responsável**.
 - Fingerprint da Play app signing key no Digital Asset Links: **pendente quando a chave estiver disponível**.
 - Ativos reais da loja: **pendentes**, conforme `docs/STORE-ASSETS.md`.
 
